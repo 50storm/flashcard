@@ -23,8 +23,8 @@
                     <span>{{ $flashcard->english }} - {{ $flashcard->japanese }}</span>
 
                     <!-- 音声読み上げボタン -->
-                    <button class="btn btn-sm btn-secondary" onclick="speakText({{ json_encode($flashcard->english) }}, 'en-US')">英語を読み上げ</button>
-                    <button class="btn btn-sm btn-secondary" onclick="speakText({{ json_encode($flashcard->japanese) }}, 'ja-JP')">日本語を読み上げ</button>
+                    <button class="btn btn-sm btn-secondary read-english" data-english="{{ $flashcard->english }}">英語を読み上げ</button>
+                    <button class="btn btn-sm btn-secondary read-japanese" data-japanese="{{ $flashcard->japanese }}">日本語を読み上げ</button>
 
                     <!-- 編集・削除ボタン -->
                     <div>
@@ -42,24 +42,36 @@
         </ul>
     </div>
 
-    <!-- 音声読み上げのスクリプト -->
     <script>
+        // 英語の読み上げボタンにイベントリスナーを追加
+        document.querySelectorAll('.read-english').forEach(button => {
+            button.addEventListener('click', function() {
+                const englishText = this.getAttribute('data-english');
+                speakText(englishText, 'en-US');
+            });
+        });
+
+        // 日本語の読み上げボタンにイベントリスナーを追加
+        document.querySelectorAll('.read-japanese').forEach(button => {
+            button.addEventListener('click', function() {
+                const japaneseText = this.getAttribute('data-japanese');
+                speakText(japaneseText, 'ja-JP');
+            });
+        });
+
+        // 音声読み上げの関数
         function speakText(text, lang = 'en-US') {
-            // Web Speech API がサポートされているか確認
             if ('speechSynthesis' in window) {
                 const speech = new SpeechSynthesisUtterance();
                 speech.text = text;
                 speech.lang = lang;
 
-                // 音声合成が準備できるまで待機してから読み上げる
                 const voices = window.speechSynthesis.getVoices();
                 if (voices.length === 0) {
-                    // 音声リストの読み込み完了を待機してから実行
                     window.speechSynthesis.onvoiceschanged = () => {
                         window.speechSynthesis.speak(speech);
                     };
                 } else {
-                    // 音声リストがすでに準備完了ならそのまま実行
                     window.speechSynthesis.speak(speech);
                 }
             } else {
@@ -67,4 +79,5 @@
             }
         }
     </script>
+
 @endsection
