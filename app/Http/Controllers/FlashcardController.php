@@ -33,4 +33,26 @@ class FlashcardController extends Controller
         return redirect()->route('flashcards.index')
                          ->with('success', 'Flashcard created successfully.');
     }
+
+        // 編集フォームの表示
+        public function edit($id)
+        {
+            $flashcard = Flashcard::findOrFail($id);
+            return view('flashcards.edit', compact('flashcard'));
+        }
+    
+        // フラッシュカードの更新
+        public function update(Request $request, $id)
+        {
+            $request->validate([
+                'english' => 'required',
+                'japanese' => 'required',
+            ]);
+    
+            $flashcard = Flashcard::findOrFail($id);
+            $flashcard->update($request->all());
+    
+            return redirect()->route('flashcards.index')
+                             ->with('success', 'Flashcard updated successfully.');
+        }
 }
