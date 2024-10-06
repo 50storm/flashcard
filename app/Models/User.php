@@ -60,4 +60,19 @@ class User extends Authenticatable
        $userEmail = $this->email;
         $this->notify(new CustomResetPasswordNotification($token, $this));
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When a new record is being created
+        static::creating(function ($model) {
+            $model->created_by = 'system';  // Set the creator to 'system'
+        });
+
+        // When a record is being updated
+        static::updating(function ($model) {
+            $model->updated_by = 'system';  // Set the updater to 'system'
+        });
+    }
 }

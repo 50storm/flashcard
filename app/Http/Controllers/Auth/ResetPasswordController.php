@@ -37,7 +37,7 @@ class ResetPasswordController extends Controller
      */
     public function reset(Request $request)
     {
-        dump($request->all());
+        // dump($request->all());
         $request->validate($this->rules(), $this->validationErrorMessages());
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -49,7 +49,7 @@ class ResetPasswordController extends Controller
             }
         );
 
-        dump($response);
+        // dump($response);
 
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
