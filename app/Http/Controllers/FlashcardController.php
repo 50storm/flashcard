@@ -55,4 +55,14 @@ class FlashcardController extends Controller
             return redirect()->route('flashcards.index')
                              ->with('success', 'Flashcard updated successfully.');
         }
+
+        public function destroy($id)
+        {
+            $flashcard = Flashcard::findOrFail($id);
+            $flashcard->delete();
+
+            return redirect()->route('flashcards.index')
+                            ->with('success', 'Flashcard deleted successfully.');
+        }
+
 }
