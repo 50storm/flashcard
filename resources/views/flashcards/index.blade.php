@@ -1,73 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-    <div>
+    <div class="container">
         <h1 class="mb-4 text-center">フラッシュカード一覧</h1>
 
-        <!-- 新しいフラッシュカードを追加するボタン -->
-        <div class="text-right mb-3">
-            <a href="{{ route('flashcards.create') }}" class="btn btn-success">新しいフラッシュカードを追加</a>
+        <!-- フラッシュカードを表示するための領域 -->
+        <div id="flashcard-list" class="list-group">
+            <!-- ここにフラッシュカードが表示される -->
         </div>
-
-        <!-- フラッシュカードのリスト -->
-        <ul class="list-group">
-            @foreach ($flashcards as $flashcard)
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span class="fixed-wrap">{{ $flashcard->english }} - {{ $flashcard->japanese }}</span>
-
-                    <!-- 音声読み上げボタン -->
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-secondary speak-btn" data-text="{{ $flashcard->english }}" data-lang="en-US">英語を読み上げ</button>
-                        <button class="btn btn-sm btn-secondary speak-btn" data-text="{{ $flashcard->japanese }}" data-lang="ja-JP">日本語を読み上げ</button>
-                    </div>
-
-                    <!-- 編集・削除ボタン -->
-                    <div class="btn-group">
-                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary">編集</a>
-                        <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('本当に削除しますか？')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">削除</button>
-                        </form>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
     </div>
 
-    <!-- 音声読み上げのスクリプト -->
+    <!-- Ajaxとクリックイベントの処理 -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // フラッシュカードのデータをAjaxで取得
+            fetch('{{ route("flashcards.api") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const flashcardList = document.getElementById('flashcard-list');
+                    flashcardList.innerHTML = '';  // 初期化
+
+                    // 取得したデータを元にフラッシュカードを作成
+                    data.forEach(flashcard => {
+                        // リストアイテムを作成
+                        const listItem = document.createElement('div');
+                        listItem.className = 'list-group-item flashcard';
+                        listItem.innerText = flashcard.japanese;  // 最初は日本語を表示
+
+                        // クリックイベントを追加
+                        listItem.addEventListener('click', function() {
+                            // 現在日本語が表示されている場合は英語を表示、英語なら日本語を表示
+                            if (listItem.innerText === flashcard.japanese) {
+                                listItem.innerText = flashcard.english;
+                                speakText(flashcard.english, 'en-US'); // 英語を読み上げ
+                            } else {
+                                listItem.innerText = flashcard.japanese;
+                                speakText(flashcard.japanese, 'ja-JP'); // 日本語を読み上げ
+                            }
+                        });
+
+                        // リストにフラッシュカードを追加
+                        flashcardList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching flashcards:', error));
+        });
+
         // テキストを読み上げる関数
         function speakText(text, lang = 'en-US') {
             if ('speechSynthesis' in window) {
-                const speech = new SpeechSynthesisUtterance();
-                speech.text = text;
-                speech.lang = lang;
+                const utterance = new SpeechSynthesisUtterance();
+                utterance.text = text;
+                utterance.lang = lang;
 
+                // 音声が利用可能な場合は音声を再生
                 const voices = window.speechSynthesis.getVoices();
                 if (voices.length === 0) {
                     window.speechSynthesis.onvoiceschanged = () => {
-                        window.speechSynthesis.speak(speech);
+                        window.speechSynthesis.speak(utterance);
                     };
                 } else {
-                    window.speechSynthesis.speak(speech);
+                    window.speechSynthesis.speak(utterance);
                 }
             } else {
                 alert('このブラウザは音声合成APIをサポートしていません。');
             }
         }
-
-        // イベントハンドラを登録
-        document.addEventListener('DOMContentLoaded', function() {
-            // 全ての speak-btn クラスのボタンにイベントハンドラを追加
-            const speakButtons = document.querySelectorAll('.speak-btn');
-            speakButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const text = this.getAttribute('data-text');
-                    const lang = this.getAttribute('data-lang');
-                    speakText(text, lang); // speakText関数を呼び出し
-                });
-            });
-        });
     </script>
 @endsection

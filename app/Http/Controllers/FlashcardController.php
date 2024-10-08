@@ -11,7 +11,16 @@ class FlashcardController extends Controller
     public function index()
     {
         $flashcards = Flashcard::all();
+
         return view('flashcards.index', compact('flashcards'));
+    }
+
+    // フラッシュカードのデータをJSONで返す
+    public function getFlashcards()
+    {
+        $flashcards = Flashcard::all();
+
+        return response()->json($flashcards);
     }
 
     // フラッシュカードを追加するフォーム
@@ -34,35 +43,35 @@ class FlashcardController extends Controller
                          ->with('success', 'Flashcard created successfully.');
     }
 
-        // 編集フォームの表示
-        public function edit($id)
-        {
-            $flashcard = Flashcard::findOrFail($id);
-            return view('flashcards.edit', compact('flashcard'));
-        }
-    
-        // フラッシュカードの更新
-        public function update(Request $request, $id)
-        {
-            $request->validate([
-                'english' => 'required',
-                'japanese' => 'required',
-            ]);
-    
-            $flashcard = Flashcard::findOrFail($id);
-            $flashcard->update($request->all());
-    
-            return redirect()->route('flashcards.index')
-                             ->with('success', 'Flashcard updated successfully.');
-        }
+    // 編集フォームの表示
+    public function edit($id)
+    {
+        $flashcard = Flashcard::findOrFail($id);
 
-        public function destroy($id)
-        {
-            $flashcard = Flashcard::findOrFail($id);
-            $flashcard->delete();
+        return view('flashcards.edit', compact('flashcard'));
+    }
 
-            return redirect()->route('flashcards.index')
-                            ->with('success', 'Flashcard deleted successfully.');
-        }
+    // フラッシュカードの更新
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'english' => 'required',
+            'japanese' => 'required',
+        ]);
 
+        $flashcard = Flashcard::findOrFail($id);
+        $flashcard->update($request->all());
+
+        return redirect()->route('flashcards.index')
+                         ->with('success', 'Flashcard updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $flashcard = Flashcard::findOrFail($id);
+        $flashcard->delete();
+
+        return redirect()->route('flashcards.index')
+                        ->with('success', 'Flashcard deleted successfully.');
+    }
 }
