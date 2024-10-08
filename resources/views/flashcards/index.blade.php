@@ -32,58 +32,29 @@
         </ul>
     </div>
 
-    <!-- Vue.jsのスクリプト -->
+    <!-- 音声読み上げのスクリプト -->
     <script>
-        const app = Vue.createApp({
-            data() {
-                return {
-                    flashcards: @json($flashcards)  // LaravelからのデータをVueに渡す
-                }
-            },
-            methods: {
-                speakText(text, lang = 'en-US') {
-                    if ('speechSynthesis' in window) {
-                        const speech = new SpeechSynthesisUtterance();
-                        speech.text = text;
-                        speech.lang = lang;
+        function speakText(text, lang = 'en-US') {
+            // Web Speech API がサポートされているか確認
+            if ('speechSynthesis' in window) {
+                const speech = new SpeechSynthesisUtterance();
+                speech.text = text;
+                speech.lang = lang;
 
-                        const voices = window.speechSynthesis.getVoices();
-                        if (voices.length === 0) {
-                            window.speechSynthesis.onvoiceschanged = () => {
-                                window.speechSynthesis.speak(speech);
-                            };
-                        } else {
-                            window.speechSynthesis.speak(speech);
-                        }
-                    } else {
-                        alert('このブラウザは音声合成APIをサポートしていません。');
-                    }
+                // 音声合成が準備できるまで待機してから読み上げる
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length === 0) {
+                    // 音声リストの読み込み完了を待機してから実行
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        window.speechSynthesis.speak(speech);
+                    };
+                } else {
+                    // 音声リストがすでに準備完了ならそのまま実行
+                    window.speechSynthesis.speak(speech);
                 }
+            } else {
+                alert('このブラウザは音声合成APIをサポートしていません。');
             }
-        });
-        app.mount('#app');
+        }
     </script>
-    <style>
-    .button-group {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn-group {
-        display: inline-flex;
-        gap: 10px;
-    }
-
-    .flashcard-item {
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-    .fixed-wrap {
-        white-space: normal; /* 折り返しを許可 */
-        word-wrap: break-word; /* 長い単語を折り返し */
-        width: 60%; /* 要素幅を固定（必要なら指定） */
-    }
-    </style>
 @endsection
