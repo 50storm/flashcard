@@ -12,11 +12,26 @@
 
         <!-- フラッシュカードを表示するための領域 -->
         <div id="flashcard-list" class="list-group">
-            <!-- ここにフラッシュカードが表示される -->
+            @foreach ($flashcards as $flashcard)
+                <div class="list-group-item flashcard">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="flashcard-text" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
+                            {{ $flashcard->japanese }}
+                        </span>
+                        <div>
+                            <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary">編集</a>
+                            <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">削除</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 
-    <!-- Ajaxとクリックイベントの処理 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let isVoiceEnabled = true; // 音声のON/OFF状態
@@ -27,78 +42,25 @@
                 isVoiceEnabled = this.checked;
             });
 
-            // フラッシュカードのデータをAjaxで取得
-            fetch('{{ route("flashcards.api") }}')
-                .then(response => response.json())
-                .then(data => {
-                    const flashcardList = document.getElementById('flashcard-list');
-                    flashcardList.innerHTML = '';  // 初期化
+            // フラッシュカードの日本語と英語を切り替える
+            document.querySelectorAll('.flashcard-text').forEach(element => {
+                element.addEventListener('click', function() {
+                    const japanese = this.getAttribute('data-japanese');
+                    const english = this.getAttribute('data-english');
 
-                    // 取得したデータを元にフラッシュカードを作成
-                    data.forEach(flashcard => {
-                        // リストアイテムを作成
-                        const listItem = document.createElement('div');
-                        listItem.className = 'list-group-item flashcard';
-                        listItem.innerHTML = `
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="flashcard-text">${flashcard.japanese}</span>
-                                <div>
-                                    <button class="btn btn-sm btn-primary edit-button" data-id="${flashcard.id}">編集</button>
-                                    <button class="btn btn-sm btn-danger delete-button" data-id="${flashcard.id}">削除</button>
-                                </div>
-                            </div>
-                        `;
-
-                        // クリックイベントで日本語と英語を切り替える
-                        listItem.querySelector('.flashcard-text').addEventListener('click', function() {
-                            const flashcardText = this;
-                            if (flashcardText.innerText === flashcard.japanese) {
-                                flashcardText.innerText = flashcard.english;
-                                if (isVoiceEnabled) {
-                                    speakText(flashcard.english, 'en-US'); // 英語を読み上げ
-                                }
-                            } else {
-                                flashcardText.innerText = flashcard.japanese;
-                                if (isVoiceEnabled) {
-                                    speakText(flashcard.japanese, 'ja-JP'); // 日本語を読み上げ
-                                }
-                            }
-                        });
-
-                        // 編集ボタンのクリックイベント
-                        listItem.querySelector('.edit-button').addEventListener('click', function() {
-                            const flashcardId = this.getAttribute('data-id');
-                            window.location.href = `/flashcards/${flashcardId}/edit`; // 編集画面に遷移
-                        });
-
-                        // 削除ボタンのクリックイベント
-                        listItem.querySelector('.delete-button').addEventListener('click', function() {
-                            const flashcardId = this.getAttribute('data-id');
-                            if (confirm('このフラッシュカードを削除しますか？')) {
-                                fetch(`api/flashcards/${flashcardId}`, {
-                                    method: 'DELETE',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    }
-                                })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert('削除しました。');
-                                        listItem.remove(); // フラッシュカードをリストから削除
-                                    } else {
-                                        alert('削除に失敗しました。');
-                                    }
-                                })
-                                .catch(error => console.error('Error deleting flashcard:', error));
-                            }
-                        });
-
-                        // リストにフラッシュカードを追加
-                        flashcardList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching flashcards:', error));
+                    if (this.innerText === japanese) {
+                        this.innerText = english;
+                        if (isVoiceEnabled) {
+                            speakText(english, 'en-US'); // 英語を読み上げ
+                        }
+                    } else {
+                        this.innerText = japanese;
+                        if (isVoiceEnabled) {
+                            speakText(japanese, 'ja-JP'); // 日本語を読み上げ
+                        }
+                    }
+                });
+            });
         });
 
         // テキストを読み上げる関数
