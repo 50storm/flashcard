@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class FlashcardApiController extends Controller
 {
-    // フラッシュカード一覧を取得
-    public function index()
+    // フラッシュカードの一覧のデータをJSONで返す
+    public function getFlashcards()
     {
         $flashcards = Flashcard::all();
         return response()->json($flashcards);

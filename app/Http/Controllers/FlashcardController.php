@@ -15,14 +15,6 @@ class FlashcardController extends Controller
         return view('flashcards.index', compact('flashcards'));
     }
 
-    // フラッシュカードのデータをJSONで返す
-    public function getFlashcards()
-    {
-        $flashcards = Flashcard::all();
-
-        return response()->json($flashcards);
-    }
-
     // フラッシュカードを追加するフォーム
     public function create()
     {
