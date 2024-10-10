@@ -9,8 +9,8 @@
             <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex align-items-center">
                 @csrf
                 <input type="text" name="japanese" class="form-control me-2" placeholder="日本語" required style="max-width: 40%;">
-                <input type="text" name="english" class="form-control me-2" placeholder="英語" required style="max-width: 40%x;">
-                <button type="submit" class="btn btn-primary" style="width:20%;">追加</button>
+                <input type="text" name="english" class="form-control me-2" placeholder="英語" required style="max-width: 40%;">
+                <button type="submit" class="btn btn-primary" style="width: 20%;">追加</button>
             </form>
         </div>
 
@@ -18,6 +18,12 @@
         <div class="form-check form-switch text-center mb-4">
             <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
             <label class="form-check-label" for="voiceToggle">音声読み上げ</label>
+        </div>
+
+        <!-- 音声速度を調整するスライダー -->
+        <div class="text-center mb-4">
+            <label for="voiceRate" class="form-label">音声速度: <span id="rateValue">1.0</span></label>
+            <input type="range" id="voiceRate" class="form-range" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 50%; margin: auto;">
         </div>
 
         <!-- フラッシュカードを表示するための領域 -->
@@ -45,11 +51,20 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let isVoiceEnabled = true; // 音声のON/OFF状態
+            let selectedRate = 1.0; // 音声速度の初期値
 
             // 音声ON/OFF切り替えのチェックボックスを設定
             const voiceToggle = document.getElementById('voiceToggle');
             voiceToggle.addEventListener('change', function() {
                 isVoiceEnabled = this.checked;
+            });
+
+            // 音声速度の選択
+            const voiceRate = document.getElementById('voiceRate');
+            const rateValueDisplay = document.getElementById('rateValue');
+            voiceRate.addEventListener('input', function() {
+                selectedRate = parseFloat(this.value);
+                rateValueDisplay.textContent = selectedRate.toFixed(1); // 速度表示を更新
             });
 
             // フラッシュカードの日本語と英語を切り替える
@@ -61,12 +76,12 @@
                     if (this.innerText === japanese) {
                         this.innerText = english;
                         if (isVoiceEnabled) {
-                            speakText(english, 'en-US'); // 英語を読み上げ
+                            speakText(english, 'en-US', selectedRate); // 英語を読み上げ
                         }
                     } else {
                         this.innerText = japanese;
                         if (isVoiceEnabled) {
-                            speakText(japanese, 'ja-JP'); // 日本語を読み上げ
+                            speakText(japanese, 'ja-JP', selectedRate); // 日本語を読み上げ
                         }
                     }
                 });
@@ -74,11 +89,12 @@
         });
 
         // テキストを読み上げる関数
-        function speakText(text, lang = 'en-US') {
+        function speakText(text, lang = 'en-US', rate = 1.0) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance();
                 utterance.text = text;
                 utterance.lang = lang;
+                utterance.rate = rate; // 音声速度を設定
 
                 // 音声が利用可能な場合は音声を再生
                 const voices = window.speechSynthesis.getVoices();
