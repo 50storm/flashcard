@@ -39,21 +39,58 @@
                         // リストアイテムを作成
                         const listItem = document.createElement('div');
                         listItem.className = 'list-group-item flashcard';
-                        listItem.innerText = flashcard.japanese;  // 最初は日本語を表示
+                        listItem.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="flashcard-text">${flashcard.japanese}</span>
+                                <div>
+                                    <button class="btn btn-sm btn-primary edit-button" data-id="${flashcard.id}">編集</button>
+                                    <button class="btn btn-sm btn-danger delete-button" data-id="${flashcard.id}">削除</button>
+                                </div>
+                            </div>
+                        `;
 
-                        // クリックイベントを追加
-                        listItem.addEventListener('click', function() {
-                            // 現在日本語が表示されている場合は英語を表示、英語なら日本語を表示
-                            if (listItem.innerText === flashcard.japanese) {
-                                listItem.innerText = flashcard.english;
+                        // クリックイベントで日本語と英語を切り替える
+                        listItem.querySelector('.flashcard-text').addEventListener('click', function() {
+                            const flashcardText = this;
+                            if (flashcardText.innerText === flashcard.japanese) {
+                                flashcardText.innerText = flashcard.english;
                                 if (isVoiceEnabled) {
                                     speakText(flashcard.english, 'en-US'); // 英語を読み上げ
                                 }
                             } else {
-                                listItem.innerText = flashcard.japanese;
+                                flashcardText.innerText = flashcard.japanese;
                                 if (isVoiceEnabled) {
                                     speakText(flashcard.japanese, 'ja-JP'); // 日本語を読み上げ
                                 }
+                            }
+                        });
+
+                        // 編集ボタンのクリックイベント
+                        listItem.querySelector('.edit-button').addEventListener('click', function() {
+                            const flashcardId = this.getAttribute('data-id');
+                            window.location.href = `/flashcards/${flashcardId}/edit`; // 編集画面に遷移
+                        });
+
+                        // 削除ボタンのクリックイベント
+                        listItem.querySelector('.delete-button').addEventListener('click', function() {
+                            const flashcardId = this.getAttribute('data-id');
+                            if (confirm('このフラッシュカードを削除しますか？')) {
+                                fetch(`api/flashcards/${flashcardId}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert('削除しました。');
+                                        listItem.remove(); // フラッシュカードをリストから削除
+                                    } else {
+                                        alert('削除に失敗しました。');
+                                    }
+                                })
+                                .catch(error => console.error('Error deleting flashcard:', error));
                             }
                         });
 
@@ -86,4 +123,3 @@
         }
     </script>
 @endsection
-s
