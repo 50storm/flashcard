@@ -4,6 +4,12 @@
     <div class="container">
         <h1 class="mb-4 text-center">フラッシュカード一覧</h1>
 
+        <!-- 音声ON/OFF切り替えスイッチ -->
+        <div class="form-check form-switch text-center mb-4">
+            <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
+            <label class="form-check-label" for="voiceToggle">音声読み上げ</label>
+        </div>
+
         <!-- フラッシュカードを表示するための領域 -->
         <div id="flashcard-list" class="list-group">
             <!-- ここにフラッシュカードが表示される -->
@@ -13,6 +19,14 @@
     <!-- Ajaxとクリックイベントの処理 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            let isVoiceEnabled = true; // 音声のON/OFF状態
+
+            // 音声ON/OFF切り替えのチェックボックスを設定
+            const voiceToggle = document.getElementById('voiceToggle');
+            voiceToggle.addEventListener('change', function() {
+                isVoiceEnabled = this.checked;
+            });
+
             // フラッシュカードのデータをAjaxで取得
             fetch('{{ route("flashcards.api") }}')
                 .then(response => response.json())
@@ -32,10 +46,14 @@
                             // 現在日本語が表示されている場合は英語を表示、英語なら日本語を表示
                             if (listItem.innerText === flashcard.japanese) {
                                 listItem.innerText = flashcard.english;
-                                speakText(flashcard.english, 'en-US'); // 英語を読み上げ
+                                if (isVoiceEnabled) {
+                                    speakText(flashcard.english, 'en-US'); // 英語を読み上げ
+                                }
                             } else {
                                 listItem.innerText = flashcard.japanese;
-                                speakText(flashcard.japanese, 'ja-JP'); // 日本語を読み上げ
+                                if (isVoiceEnabled) {
+                                    speakText(flashcard.japanese, 'ja-JP'); // 日本語を読み上げ
+                                }
                             }
                         });
 
@@ -68,3 +86,4 @@
         }
     </script>
 @endsection
+s
