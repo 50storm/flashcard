@@ -6,11 +6,11 @@
 
         <!-- 新しいフラッシュカードを追加するフォーム -->
         <div class="mb-4">
-            <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex justify-content-center">
+            <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex align-items-center">
                 @csrf
-                <input type="text" name="japanese" class="form-control me-2" placeholder="日本語" required>
-                <input type="text" name="english" class="form-control me-2" placeholder="英語" required>
-                <button type="submit" class="btn btn-success">追加</button>
+                <input type="text" name="japanese" class="form-control me-2" placeholder="日本語" required style="max-width: 40%;">
+                <input type="text" name="english" class="form-control me-2" placeholder="英語" required style="max-width: 40%x;">
+                <button type="submit" class="btn btn-primary" style="width:20%;">追加</button>
             </form>
         </div>
 
