@@ -4,6 +4,16 @@
     <div class="container">
         <h1 class="mb-4 text-center">フラッシュカード一覧</h1>
 
+        <!-- 新しいフラッシュカードを追加するフォーム -->
+        <div class="mb-4">
+            <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex justify-content-center">
+                @csrf
+                <input type="text" name="japanese" class="form-control me-2" placeholder="日本語" required>
+                <input type="text" name="english" class="form-control me-2" placeholder="英語" required>
+                <button type="submit" class="btn btn-success">追加</button>
+            </form>
+        </div>
+
         <!-- 音声ON/OFF切り替えスイッチ -->
         <div class="form-check form-switch text-center mb-4">
             <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
