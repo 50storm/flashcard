@@ -1,4 +1,28 @@
 @extends('layouts.app')
+<!-- Custom CSS Section -->
+@section('styles')
+    <style>
+        /* Add your custom styles for this page */
+        .flashcard-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+
+        .flashcard-text {
+            cursor: pointer;
+        }
+
+        /* Example of making headings responsive */
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+@endsection
 
 @section('content')
     <div class="container">
@@ -34,7 +58,8 @@
                         <span class="flashcard-text" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
                             {{ $flashcard->japanese }}
                         </span>
-                        <div>
+                        <!--右寄せ -->
+                        <div class="text-right">
                             <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary">編集</a>
                             <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
                                 @csrf
