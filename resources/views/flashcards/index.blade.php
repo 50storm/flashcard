@@ -33,7 +33,7 @@
                     <!-- 英語のtextarea -->
                     <textarea name="english" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
 
-                    <button type="submit" class="btn btn-primary">追加</button>
+                    <button type="submit" class="btn btn-primary"><span class="material-icons">edit</span></button>
                 </form>
             </div>
 
@@ -62,12 +62,14 @@
                     <!-- ボタンを縦並びにするためにflex-columnを追加 -->
                     <div class="d-flex flex-column" style="white-space: nowrap;">
                         <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn">
-                        <span class="material-icons">edit</span>                        </a>
+                            <span class="material-icons">edit</span>                        
+                        </a>
                         <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn" onclick="return confirm('このフラッシュカードを削除しますか？')">
-                            <span class="material-icons">delete</span>                            </button>
+                                <span class="material-icons">delete</span>
+                            </button>
                         </form>
                     </div>
                 </div>
