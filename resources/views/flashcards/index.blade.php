@@ -57,11 +57,15 @@
                     </span>
                     <!-- ボタンを縦並びにするためにflex-columnを追加 -->
                     <div class="d-flex flex-column" style="white-space: nowrap;">
-                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mb-2">編集</a>
+                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mb-2">
+                            <i class="fas fa-edit"></i> <!-- 編集アイコン -->
+                        </a>
                         <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">削除</button>
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">
+                                <i class="fas fa-trash-alt"></i> <!-- 削除アイコン -->
+                            </button>
                         </form>
                     </div>
                 </div>
