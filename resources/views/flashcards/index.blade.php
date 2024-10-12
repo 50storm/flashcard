@@ -8,28 +8,42 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4 text-center display-6 display-md-4">フラッシュカード一覧</h1>
-
-        <!-- 新しいフラッシュカードを追加するフォーム -->
-        <div class="mb-4">
-            <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex flex-column">
-                @csrf
-                <input type="text" name="japanese" class="form-control me-2" placeholder="日本語" required>
-                <input type="text" name="english" class="form-control me-2" placeholder="英語" required>
-                <button type="submit" class="btn btn-primary">追加</button>
-            </form>
+        <!-- ハンバーガーメニューのトリガー部分 -->
+        <div class="d-flex">
+            <!-- TODO mt-2は、デスクトップのときのみ -->
+            <div class="mt-lg-2">
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menuContent" aria-expanded="false" aria-controls="menuContent">
+                    <span>&#9776;</span>
+                </button>
+            </div>
+            <div class="">
+                <h1>フラッシュカード一覧</h1>
+            </div>
         </div>
 
-        <!-- 音声ON/OFF切り替えスイッチ -->
-        <div class="text-center mb-4">
-            <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
-            <label class="form-check-label" for="voiceToggle">音声読み上げ</label>
-        </div>
+        <!-- ハンバーガーメニューで開く部分 -->
+        <div id="menuContent" class="collapse">
+            <!-- 新しいフラッシュカードを追加するフォーム -->
+            <div class="mb-4">
+                <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex flex-column">
+                    @csrf
+                    <input type="text" name="japanese" class="form-control mb-2" placeholder="日本語" required>
+                    <input type="text" name="english" class="form-control mb-2" placeholder="英語" required>
+                    <button type="submit" class="btn btn-primary">追加</button>
+                </form>
+            </div>
 
-        <!-- 音声速度を調整するスライダー -->
-        <div class="text-center mb-4">
-            <label for="voiceRate" class="form-label">音声速度: <span id="rateValue">1.0</span></label>
-            <input type="range" id="voiceRate" class="form-range" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 50%; margin: auto;">
+            <!-- 音声ON/OFF切り替えスイッチ -->
+            <div class="text-center mb-4">
+                <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
+                <label class="form-check-label" for="voiceToggle">音声読み上げ</label>
+            </div>
+
+            <!-- 音声速度を調整するスライダー -->
+            <div class="text-center mb-4">
+                <label for="voiceRate" class="form-label">音声速度: <span id="rateValue">1.0</span></label>
+                <input type="range" id="voiceRate" class="form-range" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 50%; margin: auto;">
+            </div>
         </div>
 
         <!-- フラッシュカードを表示するための領域 -->
