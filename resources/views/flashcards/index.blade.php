@@ -28,10 +28,10 @@
                 <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex flex-column">
                     @csrf
                     <!-- 日本語のtextarea -->
-                    <textarea name="japanese" class="form-control mb-2 japanese-textarea" placeholder="日本語" required rows="7"></textarea>
+                    <textarea id="japaneseTextarea" name="japanese" class="form-control mb-2 japanese-textarea" placeholder="日本語" required rows="7"></textarea>
 
                     <!-- 英語のtextarea -->
-                    <textarea name="english" spellcheck="true" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
+                    <textarea id="englishTextarea" name="english" spellcheck="true" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
 
                     <button type="submit" class="btn btn-primary"><span class="material-icons">edit</span></button>
                 </form>
@@ -140,5 +140,25 @@
                 alert('このブラウザは音声合成APIをサポートしていません。');
             }
         }
+        
+        // ウィンドウサイズに応じてtextareaの行数を変更する関数
+        function resizeTextarea() {
+            var japaneseTextarea = document.getElementById('japaneseTextarea');
+            var englishTextarea = document.getElementById('englishTextarea');
+
+            // デスクトップサイズ（幅992px以上）の場合の行数
+            if (window.innerWidth >= 992) {
+                japaneseTextarea.rows = 13; // デスクトップでは5行
+                englishTextarea.rows = 13;
+            } else {
+                // モバイルサイズ（幅992px未満）の場合の行数
+                japaneseTextarea.rows = 10; // モバイルでは3行
+                englishTextarea.rows = 10;
+            }
+        }
+        
+        // ページが読み込まれたとき、またはウィンドウがリサイズされたときに行数を調整
+        window.addEventListener('resize', resizeTextarea);
+        window.addEventListener('load', resizeTextarea);
     </script>
 @endsection
