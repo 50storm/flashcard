@@ -49,7 +49,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() { 
             let isVoiceEnabled = true; // 音声のON/OFF状態
             let selectedRate = 1.0; // 音声速度の初期値
 
@@ -92,8 +92,8 @@
         function speakText(text, lang = 'en-US', rate = 1.0) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance();
-                utterance.text = text;
-                utterance.lang = lang;
+                utterance.text = text; // 読み上げるテキスト
+                utterance.lang = lang; // 言語
                 utterance.rate = rate; // 音声速度を設定
 
                 // 音声が利用可能な場合は音声を再生
