@@ -33,7 +33,7 @@
                     <!-- 英語のtextarea -->
                     <textarea id="englishTextarea" name="english" spellcheck="true" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
 
-                    <button type="submit" class="btn btn-primary"><span class="material-icons">edit</span></button>
+                    <button id="submitButton" type="submit" class="btn"><span class="material-icons">edit</span></button>
                 </form>
             </div>
 
@@ -83,6 +83,10 @@
         document.addEventListener('DOMContentLoaded', function() { 
             let isVoiceEnabled = true; // 音声のON/OFF状態
             let selectedRate = 1.0; // 音声速度の初期値
+
+             // イベントリスナーをテキストエリアに追加
+            document.getElementById('japaneseTextarea').addEventListener('input', checkTextareaInput);
+            document.getElementById('englishTextarea').addEventListener('input', checkTextareaInput);
 
             // 音声ON/OFF切り替えのチェックボックスを設定
             const voiceToggle = document.getElementById('voiceToggle');
@@ -157,6 +161,22 @@
             }
         }
         
+        // テキストエリアの入力がある場合にボタンにクラスを追加する関数
+        function checkTextareaInput() {
+            var japaneseTextarea = document.getElementById('japaneseTextarea').value.trim();
+            var englishTextarea = document.getElementById('englishTextarea').value.trim();
+            var submitButton = document.getElementById('submitButton');
+
+            // 日本語と英語のtextarea両方に入力がある場合
+            if (japaneseTextarea && englishTextarea) {
+                submitButton.classList.add('btn-primary');
+                submitButton.disabled = false;  // ボタンを有効化
+            } else {
+                submitButton.classList.remove('btn-primary');
+                submitButton.disabled = true;  // ボタンを無効化
+            }
+        }
+
         // ページが読み込まれたとき、またはウィンドウがリサイズされたときに行数を調整
         window.addEventListener('resize', resizeTextarea);
         window.addEventListener('load', resizeTextarea);
