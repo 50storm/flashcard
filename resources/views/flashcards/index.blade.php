@@ -31,7 +31,7 @@
                     <textarea name="japanese" class="form-control mb-2 japanese-textarea" placeholder="日本語" required rows="7"></textarea>
 
                     <!-- 英語のtextarea -->
-                    <textarea name="english" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
+                    <textarea name="english" spellcheck="true" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
 
                     <button type="submit" class="btn btn-primary"><span class="material-icons">edit</span></button>
                 </form>
