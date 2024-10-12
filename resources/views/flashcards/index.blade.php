@@ -2,25 +2,7 @@
 <!-- Custom CSS Section -->
 @section('styles')
     <style>
-        /* Add your custom styles for this page */
-        .flashcard-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-        }
 
-        .flashcard-text {
-            cursor: pointer;
-        }
-
-        /* Example of making headings responsive */
-        @media (max-width: 576px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-        }
     </style>
 @endsection
 
@@ -54,13 +36,14 @@
         <div id="flashcard-list" class="list-group">
             @foreach ($flashcards as $flashcard)
                 <div class="list-group-item flashcard">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="flashcard-text" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
+                    <div class="d-flex justify-content-between align-items-center" style="flex-wrap: nowrap;">
+                        <!-- テキスト部分にflex-growとmin-widthを適用して、幅の調整を行う -->
+                        <span class="flashcard-text" style="flex-grow: 1; min-width: 0;" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
                             {{ $flashcard->japanese }}
                         </span>
-                        <!--右寄せ -->
-                        <div class="text-right">
-                            <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary">編集</a>
+                        <!-- ボタンの折り返しを防ぐためにwhite-space: nowrapを適用 -->
+                        <div class="d-flex" style="white-space: nowrap;">
+                            <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mr-2">編集</a>
                             <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
                                 @csrf
                                 @method('DELETE')
