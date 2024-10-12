@@ -34,26 +34,27 @@
 
         <!-- フラッシュカードを表示するための領域 -->
         <div id="flashcard-list" class="list-group">
-            @foreach ($flashcards as $flashcard)
-                <div class="list-group-item flashcard">
-                    <div class="d-flex justify-content-between align-items-center" style="flex-wrap: nowrap;">
-                        <!-- テキスト部分にflex-growとmin-widthを適用して、幅の調整を行う -->
-                        <span class="flashcard-text" style="flex-grow: 1; min-width: 0;" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
-                            {{ $flashcard->japanese }}
-                        </span>
-                        <!-- ボタンの折り返しを防ぐためにwhite-space: nowrapを適用 -->
-                        <div class="d-flex" style="white-space: nowrap;">
-                            <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mr-2">編集</a>
-                            <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">削除</button>
-                            </form>
-                        </div>
+        @foreach ($flashcards as $flashcard)
+            <div class="list-group-item flashcard">
+                <div class="d-flex justify-content-between align-items-center">
+                    <!-- テキスト部分 -->
+                    <span class="flashcard-text" style="flex-grow: 1;" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
+                        {{ $flashcard->japanese }}
+                    </span>
+                    <!-- ボタンを縦並びにするためにflex-columnを追加 -->
+                    <div class="d-flex flex-column" style="white-space: nowrap;">
+                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mb-2">編集</a>
+                        <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">削除</button>
+                        </form>
                     </div>
                 </div>
-            @endforeach
+            </div>
+        @endforeach
         </div>
+
     </div>
 
     <script>
