@@ -12,8 +12,8 @@
         <div class="d-flex">
             <!-- TODO mt-2は、デスクトップのときのみ -->
             <div class="mt-lg-2">
-                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menuContent" aria-expanded="false" aria-controls="menuContent">
-                    <span>&#9776;</span>
+                <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#menuContent" aria-expanded="false" aria-controls="menuContent">
+                <span>&#9776;</span>
                 </button>
             </div>
             <div class="">
@@ -57,15 +57,13 @@
                     </span>
                     <!-- ボタンを縦並びにするためにflex-columnを追加 -->
                     <div class="d-flex flex-column" style="white-space: nowrap;">
-                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn btn-sm btn-primary mb-2">
-                            <i class="fas fa-edit"></i> <!-- 編集アイコン -->
-                        </a>
+                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn">
+                        <span class="material-icons">edit</span>                        </a>
                         <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('このフラッシュカードを削除しますか？')">
-                                <i class="fas fa-trash-alt"></i> <!-- 削除アイコン -->
-                            </button>
+                            <button type="submit" class="btn" onclick="return confirm('このフラッシュカードを削除しますか？')">
+                            <span class="material-icons">delete</span>                            </button>
                         </form>
                     </div>
                 </div>
