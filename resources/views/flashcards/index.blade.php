@@ -27,8 +27,12 @@
             <div class="mb-4">
                 <form action="{{ route('flashcards.store') }}" method="POST" class="d-flex flex-column">
                     @csrf
-                    <input type="text" name="japanese" class="form-control mb-2" placeholder="日本語" required>
-                    <input type="text" name="english" class="form-control mb-2" placeholder="英語" required>
+                    <!-- 日本語のtextarea -->
+                    <textarea name="japanese" class="form-control mb-2 japanese-textarea" placeholder="日本語" required rows="7"></textarea>
+
+                    <!-- 英語のtextarea -->
+                    <textarea name="english" class="form-control mb-2 english-textarea" placeholder="英語" required rows="7"></textarea>
+
                     <button type="submit" class="btn btn-primary">追加</button>
                 </form>
             </div>
