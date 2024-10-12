@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4 text-center">フラッシュカード一覧</h1>
+        <h1 class="mb-4 text-center display-6 display-md-4">フラッシュカード一覧</h1>
 
         <!-- 新しいフラッシュカードを追加するフォーム -->
         <div class="mb-4">
@@ -15,7 +15,7 @@
         </div>
 
         <!-- 音声ON/OFF切り替えスイッチ -->
-        <div class="form-check form-switch text-center mb-4">
+        <div class="text-center mb-4">
             <input class="form-check-input" type="checkbox" id="voiceToggle" checked>
             <label class="form-check-label" for="voiceToggle">音声読み上げ</label>
         </div>
