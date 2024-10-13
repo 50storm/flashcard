@@ -26,5 +26,6 @@ class FlashcardSeeder extends Seeder
         Flashcard::create(['english' => 'Let me know your availability.', 'japanese' => 'ご都合をお知らせください。']);
         Flashcard::create(['english' => 'Thank you for your cooperation.', 'japanese' => 'ご協力ありがとうございます。']);
         Flashcard::create(['english' => 'I apologize for the inconvenience.', 'japanese' => 'ご不便をおかけして申し訳ございません。']);
+        Flashcard::create(['english' => "I haven't seen you in ages!.", 'japanese' => '長い間お会いしていませんでいsたね！']);
     }
 }
