@@ -8,4 +8,16 @@ Route::get('/', function() {
 });
 
 
+
+// Laravel Excel 
+use App\Exports\UsersCsvExport;
+use Maatwebsite\Excel\Facades\Excel;
+// use Illuminate\Support\Facades\Route;
+
+Route::get('/export-users-csv', function () {
+    return Excel::download(new UsersCsvExport, 'users.csv', \Maatwebsite\Excel\Excel::CSV);
+});
+
+
+
 Route::resource('flashcards', FlashcardController::class);

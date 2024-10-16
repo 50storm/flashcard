@@ -77,7 +77,14 @@
 
         </div>
 
-        <!-- Features Section -->
+        <div>
+            <form action="/export-users-csv" method="GET" >
+                @csrf
+                <!-- <input type="file" name="file"> -->
+                <button type="submit">Export Users</button>
+            </form>
+        </div>
+        <!-- Features Section -->      
         <div class="features mt-12">
             <div class="feature-item">
                 <h2 class="feature-title">シンプルな操作</h2>
