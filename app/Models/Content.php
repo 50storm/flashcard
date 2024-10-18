@@ -21,24 +21,23 @@ class Content extends Model
      *
      * @var array
      */
-    protected $fillable = ['language_id', 'content', 'type', 'published_at']; // 複数代入可能な属性
+    protected $fillable = ['language_id', 'content']; // 複数代入可能な属性
 
     /**
      * The attributes that should be cast.
      *
      * @var array
      */
-    protected $casts = [
-        'published_at' => 'datetime', // published_atをdatetime型にキャスト
-        'type' => 'boolean', // typeをboolean型にキャスト (0 = front, 1 = back)
-    ];
+    protected $casts = [];
 
     /**
      * Get the language associated with the content.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function language()
     {
-        return $this->belongsTo(Language::class); // Language モデルとのリレーション
+        // 外部キーが 'language_id'、対応する 'languages' テーブルの 'id' を参照
+        return $this->belongsTo(Language::class, 'language_id', 'id');
     }
 }
-
