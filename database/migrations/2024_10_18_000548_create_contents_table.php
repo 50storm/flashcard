@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id(); // 主キー: id
             $table->unsignedBigInteger('language_id'); // 言語ID (外部キー)
             $table->text('content'); // 内容
-            $table->boolean('type')->default(0); // frontなら0、backなら1を保存するフラグ
             $table->timestamps(); // created_at と updated_at
-
             // 言語テーブルとの外部キー制約を追加
             $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade');
         });
