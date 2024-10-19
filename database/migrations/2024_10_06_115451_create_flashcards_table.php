@@ -10,10 +10,14 @@ return new class () extends Migration {
      */
     public function up()
     {
-        Schema::create('flashcards', function(Blueprint $table) {
+        Schema::create('flashcards', function (Blueprint $table) {
             $table->id();
-            $table->string('english');  // 英単語や文
-            $table->string('japanese'); // 日本語訳
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('content_front_id'); // 表
+            $table->unsignedBigInteger('content_back_id'); // 裏
+            $table->foreign('content_front_id')->references('id')->on('contents')->onDelete('cascade');
+            $table->foreign('content_back_id')->references('id')->on('contents')->onDelete('cascade');
             $table->timestamps();
         });
     }
