@@ -9,6 +9,9 @@ class FlashcardContent extends Model
 {
     use HasFactory;
 
+     // テーブル名を指定
+     protected $table = 'flashcard_content';
+
     /**
      * The attributes that are mass assignable.
      *
