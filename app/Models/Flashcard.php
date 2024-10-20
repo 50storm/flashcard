@@ -17,7 +17,7 @@ class Flashcard extends Model
      */
     public function contents()
     {
-        return $this->hasMany(FlashcardContent::class, 'flashcard_id');
+        return $this->hasManyThrough(Content::class, FlashcardContent::class, 'flashcard_id', 'id', 'id', 'content_id');
     }
 
     /**
