@@ -20,10 +20,11 @@ class FlashcardController extends Controller
      */
     public function practice($id)
     {
-        // 指定されたIDでフラッシュカードを取得。関連する内容も取得する
-        //TODO flashcard_contentもとってくる
-        $flashcard = Flashcard::with('flashcardContents', 'contents')->findOrFail($id);
-        // dd($flashcard);
+        // 中間テーブルも取得する
+        $flashcard = Flashcard::with('contents.language')
+                          ->where('user_id', 1) // 条件として特定のユーザーID
+                          ->where('id', $id) // 指定されたフラッシュカードのID
+                          ->firstOrFail(); // 1つの結果を取得し、なければ404エラー
         // 'practice'ビューにフラッシュカードのデータを渡す
         return view('flashcards.practice', compact('flashcard'));
     }
