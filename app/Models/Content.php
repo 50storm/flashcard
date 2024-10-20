@@ -40,4 +40,10 @@ class Content extends Model
         // 外部キーが 'language_id'、対応する 'languages' テーブルの 'id' を参照
         return $this->belongsTo(Language::class, 'language_id', 'id');
     }
+
+    public function flashcards()
+    {
+        return $this->belongsToMany(Flashcard::class, 'flashcard_content', 'content_id', 'flashcard_id')
+                    ->withPivot('side_type'); // 中間テーブルのフィールドも取得
+    }
 }

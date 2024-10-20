@@ -17,7 +17,8 @@ class Flashcard extends Model
      */
     public function contents()
     {
-        return $this->hasManyThrough(Content::class, FlashcardContent::class, 'flashcard_id', 'id', 'id', 'content_id');
+        return $this->belongsToMany(Content::class, 'flashcard_content', 'flashcard_id', 'content_id')
+                    ->withPivot('side_type'); // 中間テーブルのフィールドも取得
     }
 
     /**
