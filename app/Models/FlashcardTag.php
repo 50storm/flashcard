@@ -9,6 +9,9 @@ class FlashcardTag extends Model
 {
     use HasFactory;
 
+    // テーブル名を明示的に指定する場合（Laravelの命名規則に従っていれば不要）
+    protected $table = 'flashcard_tag';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -18,8 +21,6 @@ class FlashcardTag extends Model
 
     /**
      * FlashcardTag belongs to a Flashcard.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function flashcard()
     {
@@ -28,8 +29,6 @@ class FlashcardTag extends Model
 
     /**
      * FlashcardTag belongs to a Tag.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function tag()
     {
