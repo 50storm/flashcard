@@ -19,5 +19,7 @@ Route::get('/export-users-csv', function () {
 });
 
 
+Route::get('flashcards/{id}/practice', [FlashcardController::class, 'practice'])->name('flashcards.practice');
+
 
 Route::resource('flashcards', FlashcardController::class);

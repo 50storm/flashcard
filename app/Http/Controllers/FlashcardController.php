@@ -10,11 +10,23 @@ class FlashcardController extends Controller
     // フラッシュカードを表示する
     public function index()
     {
-        $flashcards = Flashcard::all();
-
+        // contentをEager Loadingで取得
+        $flashcards = Flashcard::with('contents')->get();
         return view('flashcards.index', compact('flashcards'));
     }
 
+     /**
+     * 指定されたフラッシュカードで練習するページを表示する
+     */
+    public function practice($id)
+    {
+        // 指定されたIDでフラッシュカードを取得。関連する内容も取得する
+        //TODO flashcard_contentもとってくる
+        $flashcard = Flashcard::with('flashcardContents', 'contents')->findOrFail($id);
+        // dd($flashcard);
+        // 'practice'ビューにフラッシュカードのデータを渡す
+        return view('flashcards.practice', compact('flashcard'));
+    }
     // フラッシュカードを追加するフォーム
     public function create()
     {
