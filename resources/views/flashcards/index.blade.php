@@ -65,6 +65,8 @@
                         <div class="col-md-4">
                             <div class="card mb-4">
                                 <div class="card-body">
+                                    <!-- このフラッシュカードを練習するボタンを追加 -->
+                                    <a href="{{ route('flashcards.practice', $flashcard->id) }}" class="btn btn-primary mb-2">このフラッシュカードを練習する</a>
                                     <h5 class="card-title">Flashcard ID: {{ $flashcard->id }}</h5>
                                     <p class="card-text"><strong>User ID:</strong> {{ $flashcard->user_id }}</p>
 
