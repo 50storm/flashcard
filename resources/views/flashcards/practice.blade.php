@@ -18,6 +18,10 @@
             background-color: #f0f0f0;
         }
 
+        .flashcard-back {
+            display: none; /* 裏面は非表示 */
+        }
+
         .header-icon {
             display: flex;
             align-items: center;
@@ -54,23 +58,19 @@
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
-        @foreach ($flashcard->contents as $content)
-            @if($content->pivot->side_type == 0)
-                <div class="flashcard-container" data-card-id="{{ $content->pivot->flashcard_id }}">
-                    <!-- 表面の表示 -->
-                    <span class="flashcard-front">
-                        {{ $content->content }} <!-- 表の内容 -->
-                    </span>
-                </div>
-            @else
-                <div class="flashcard-container d-none" data-card-id="{{ $content->pivot->flashcard_id }}">
-                    <!-- 裏面はデフォルトでは非表示 -->
-                    <span class="flashcard-back">
-                        {{ $content->content }} <!-- 裏の内容 -->
-                    </span>
-                </div>
-            @endif
-        @endforeach
+         <!-- TODO foreachをやめて、forにして。表と裏を１つのdive要素に埋める。
+          
+         -->
+        <!-- 表と裏のコンテンツを一つのdivにまとめて表示 -->
+        @for ($i = 0; $i < count($flashcard->contents); $i += 2)
+            <div class="flashcard-container" data-back-content="{{ $flashcard->contents[$i+1]->content ?? '裏のカードがありません' }}">
+                <!-- 表面の表示 -->
+                <span class="flashcard-front">
+                    {{ $flashcard->contents[$i]->content }} <!-- 表の内容 -->
+                </span>
+            </div>
+        @endfor
+
 
         <!-- ボタンで他のページに戻る -->
         <div class="text-center mt-4">
@@ -80,22 +80,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // フラッシュカード全体にクリックイベントを追加
+            // 全てのフラッシュカードにクリックイベントを追加
             document.querySelectorAll('.flashcard-container').forEach(function(card) {
-                card.addEventListener('click', function() {
-                    const cardId = card.getAttribute('data-card-id');
-                    const front = document.querySelector(`.flashcard-container[data-card-id="${cardId}"]:not(.d-none)`);
-                    const back = document.querySelector(`.flashcard-container[data-card-id="${cardId}"].d-none`);
+                let isFront = true; // 表か裏かの状態を管理
+                const front = card.querySelector('.flashcard-front');
+                const backContent = card.getAttribute('data-back-content'); // 裏面の内容をdata属性から取得
 
-                    if (front && back) {
-                        front.classList.add('d-none'); // 表を非表示
-                        back.classList.remove('d-none'); // 裏を表示
-                    } else if (back && front) {
-                        back.classList.add('d-none'); // 裏を非表示
-                        front.classList.remove('d-none'); // 表を表示
+                // カードをクリックしたら表と裏を切り替える
+                card.addEventListener('click', function() {
+                    if (isFront) {
+                        front.innerText = backContent;  // 裏の内容を表示
+                    } else {
+                        front.innerText = front.getAttribute('data-original-front') || front.innerText;  // 元の表の内容を表示
                     }
+                    isFront = !isFront;  // 表裏の状態を切り替え
                 });
+
+                // 表面の内容を保存 (初期状態)
+                front.setAttribute('data-original-front', front.innerText);
             });
         });
     </script>
+
 @endsection
