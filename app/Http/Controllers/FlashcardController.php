@@ -21,12 +21,14 @@ class FlashcardController extends Controller
     public function practice($id)
     {
         // 中間テーブルも取得する
+        // Note: Joinよりもeager loadingが早いらしい。
         $flashcard = Flashcard::with('contents.language')
                           ->where('user_id', 1) // 条件として特定のユーザーID
                           ->where('id', $id) // 指定されたフラッシュカードのID
                           ->firstOrFail(); // 1つの結果を取得し、なければ404エラー
+        $contents =  $flashcard->contents;
         // 'practice'ビューにフラッシュカードのデータを渡す
-        return view('flashcards.practice', compact('flashcard'));
+        return view('flashcards.practice', compact('contents'));
     }
     // フラッシュカードを追加するフォーム
     public function create()

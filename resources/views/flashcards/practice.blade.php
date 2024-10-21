@@ -54,16 +54,21 @@
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
-        @for ($i = 0; $i < count($flashcard->contents); $i += 2)
+        @for ($i = 0; $i < count($contents); $i += 2)
+
+            @php
+                $frontContent = $contents[$i];
+                $backContent = isset($contents[$i+1]) ? $contents[$i+1] : null;
+            @endphp
             <div class="flashcard-container" 
-                 data-front-content="{{ e($flashcard->contents[$i]->content) }}" 
-                 data-front-language_code="{{ $flashcard->contents[$i]->language->language_code }}"
-                 data-back-content="{{ e($flashcard->contents[$i+1]->content ?? '裏のカードがありません') }}"
-                 data-back-language_code="{{ $flashcard->contents[$i+1]->language->language_code }}"
-                 >
+                data-front-content="{{ e($frontContent->content) }}" 
+                data-front-language_code="{{ $frontContent->language->language_code }}"
+                data-back-content="{{ e($backContent ? $backContent->content : '裏のカードがありません') }}"
+                data-back-language_code="{{ $backContent ? $backContent->language->language_code : '' }}"
+                >
                 <!-- 表面の表示 -->
                 <span class="flashcard-front">
-                    {{ $flashcard->contents[$i]->content }} <!-- 表の内容 -->
+                    {{ $frontContent->content }} <!-- 表の内容 -->
                 </span>
             </div>
         @endfor
