@@ -60,19 +60,21 @@
 
         <!-- メニューコンテンツ -->
         <div id="menuContent" class="collapse">
-            <!-- メニュー項目 -->
+            <!-- Menu Items -->
             <ul class="list-group">
-                <!-- TODO 英語にして -->
-                <li class="list-group-item"><a href="#">新しいカード追加</a></li>
-                <li class="list-group-item"><a href="#">CSV出力</a></li>
-                <li class="list-group-item"><a href="#">Excel出力</a></li>
-                <li class="list-group-item"><a href="#">HTML出力</a></li>
+                <!-- "Add New Card"をクリックするとモーダルが開く -->
+                <li class="list-group-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#addCardModal">Add New Card</a>
+                </li>
+                <li class="list-group-item"><a href="#">Export CSV</a></li>
+                <li class="list-group-item"><a href="#">Export Excel</a></li>
+                <li class="list-group-item"><a href="#">Export HTML</a></li>
             </ul>
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
         <!-- コレクションの機能を使いLaravelっぽくリファクタ -->
-        @foreach ($contents->chunk(2) as $chunk)
+        @foreach ($flashcard->contents->chunk(2) as $chunk)
             @php
                 $frontContent = $chunk->first();
                 $backContent = $chunk->count() > 1 ? $chunk->last() : null;
@@ -92,9 +94,52 @@
 
         <!-- 一覧に戻るボタン -->
         <div class="text-center mt-4">
-            <a href="{{ route('flashcards.index') }}" class="btn btn-secondary">一覧に戻る</a>
+            <a href="{{ route('flashcards.index') }}" class="btn btn-secondary">Back to List</a>
         </div>
     </div>
+
+
+    <!-- 新しいカードを追加するモーダル -->
+    <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- TODO ajaxで -->
+        <form id="addCardForm" method="POST" action="{{ route('api.contents.store', $flashcard->id) }}">
+            @csrf
+            <div class="modal-header">
+              <h5 class="modal-title" id="addCardModalLabel">Add New Card</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Front Side Input -->
+              <div class="mb-3">
+                <label for="frontContent" class="form-label">Front Side Content</label>
+                <textarea class="form-control" id="frontContent" name="frontContent" rows="3" required></textarea>
+              </div>
+              <!-- Back Side Input -->
+              <div class="mb-3">
+                <label for="backContent" class="form-label">Back Side Content</label>
+                <textarea class="form-control" id="backContent" name="backContent" rows="3" required></textarea>
+              </div>
+              <!-- Language Codes (Optional) -->
+              <div class="mb-3">
+                <label for="frontLanguage" class="form-label">Front Side Language Code</label>
+                <input type="text" class="form-control" id="frontLanguage" name="frontLanguage" value="en-US" required>
+              </div>
+              <div class="mb-3">
+                <label for="backLanguage" class="form-label">Back Side Language Code</label>
+                <input type="text" class="form-control" id="backLanguage" name="backLanguage" value="ja" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Add Card</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
 
     <!-- あなたのカスタムスクリプト -->
     <script>
@@ -103,7 +148,7 @@
             let selectedRate = 1.0;
 
             // フラッシュカードの機能
-            document.querySelectorAll('.flashcard-container').forEach(function(card) {
+            function attachFlashcardEvent(card) {
                 let isFront = true;
                 const frontContent = card.getAttribute('data-front-content');
                 const backContent = card.getAttribute('data-back-content');
@@ -134,6 +179,11 @@
                         }
                     }
                 });
+            }
+
+            // 既存のフラッシュカードにイベントを設定
+            document.querySelectorAll('.flashcard-container').forEach(function(card) {
+                attachFlashcardEvent(card);
             });
 
             // テキストを読み上げる関数
@@ -176,6 +226,11 @@
                     }
                 }
             }
+
+            // ------ TODO ------
+            // "Add New Card"フォームの送信をAJAXで処理
+            //  新しいフラッシュカードをDOMに追加する関数
+
         });
     </script>
 @endsection

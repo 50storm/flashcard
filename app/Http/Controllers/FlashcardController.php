@@ -26,9 +26,8 @@ class FlashcardController extends Controller
                           ->where('user_id', 1) // 条件として特定のユーザーID
                           ->where('id', $id) // 指定されたフラッシュカードのID
                           ->firstOrFail(); // 1つの結果を取得し、なければ404エラー
-        $contents =  $flashcard->contents;
         // 'practice'ビューにフラッシュカードのデータを渡す
-        return view('flashcards.practice', compact('contents'));
+        return view('flashcards.practice', compact('flashcard'));
     }
     // フラッシュカードを追加するフォーム
     public function create()
