@@ -33,11 +33,7 @@
             font-size: 30px;
         }
 
-        .menu-icon {
-            cursor: pointer;
-        }
-
-        .user-icon {
+        .menu-icon, .user-icon {
             cursor: pointer;
         }
     </style>
@@ -61,7 +57,10 @@
         @for ($i = 0; $i < count($flashcard->contents); $i += 2)
             <div class="flashcard-container" 
                  data-front-content="{{ e($flashcard->contents[$i]->content) }}" 
-                 data-back-content="{{ e($flashcard->contents[$i+1]->content ?? '裏のカードがありません') }}">
+                 data-front-language_code="{{ $flashcard->contents[$i]->language->language_code }}"
+                 data-back-content="{{ e($flashcard->contents[$i+1]->content ?? '裏のカードがありません') }}"
+                 data-back-language_code="{{ $flashcard->contents[$i+1]->language->language_code }}"
+                 >
                 <!-- 表面の表示 -->
                 <span class="flashcard-front">
                     {{ $flashcard->contents[$i]->content }} <!-- 表の内容 -->
@@ -85,36 +84,68 @@
                 let isFront = true; // 表か裏かの状態を管理
                 const frontContent = card.getAttribute('data-front-content');
                 const backContent = card.getAttribute('data-back-content');
+                const frontLangCode = card.getAttribute('data-front-language_code');
+                const backLangCode = card.getAttribute('data-back-language_code');
+                
                 const frontSpan = card.querySelector('.flashcard-front');
 
                 card.addEventListener('click', function() {
+                    // After speaking, the content should be changed
                     if (isFront) {
-                        frontSpan.innerText = backContent; // 裏の内容を表示
                         if (isVoiceEnabled) {
-                            speakText(backContent, 'ja-JP', selectedRate); // 裏面を読み上げ（日本語）
+                            speakText(frontContent, frontLangCode, selectedRate, function() {
+                                frontSpan.innerText = backContent; // Show back content
+                                isFront = false; // Set state to back
+                            });
+                        } else {
+                            frontSpan.innerText = backContent; // Show back content
+                            isFront = false; // Set state to back
                         }
                     } else {
-                        frontSpan.innerText = frontContent; // 表の内容を表示
                         if (isVoiceEnabled) {
-                            speakText(frontContent, 'en-US', selectedRate); // 表面を読み上げ（英語）
+                            speakText(backContent, backLangCode, selectedRate, function() {
+                                frontSpan.innerText = frontContent; // Show front content
+                                isFront = true; // Set state to front
+                            });
+                        } else {
+                            frontSpan.innerText = frontContent; // Show front content
+                            isFront = true; // Set state to front
                         }
                     }
-                    isFront = !isFront; // 表裏の状態を切り替え
                 });
             });
+
+            // Log available voices to the console for debugging
+            window.speechSynthesis.onvoiceschanged = function() {
+                const voices = window.speechSynthesis.getVoices();
+                console.log('Available voices:', voices);
+            };
         });
 
-        // テキストを読み上げる関数
-        function speakText(text, lang = 'en-US', rate = 1.0) {
+        // Function to speak text with a callback after speech ends
+        function speakText(text, lang = 'en-US', rate = 1.0, onEndCallback) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = lang;
                 utterance.rate = rate;
 
-                // 音声が利用可能な場合は音声を再生
+                // Set onend event handler
+                if (typeof onEndCallback === 'function') {
+                    utterance.onend = onEndCallback;
+                }
+
                 function speak() {
                     const voices = window.speechSynthesis.getVoices();
-                    utterance.voice = voices.find(voice => voice.lang === lang) || null;
+                    let selectedVoice = voices.find(voice => voice.lang === lang);
+
+                    // If exact match not found, try to find a voice that starts with the base language code
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(voice => voice.lang.startsWith(lang));
+                    }
+
+                    // If still not found, use default voice
+                    utterance.voice = selectedVoice || null;
+
                     window.speechSynthesis.speak(utterance);
                 }
 
@@ -125,6 +156,10 @@
                 }
             } else {
                 alert('このブラウザは音声合成APIをサポートしていません。');
+                // If speech synthesis not supported, call the callback immediately
+                if (typeof onEndCallback === 'function') {
+                    onEndCallback();
+                }
             }
         }
     </script>
