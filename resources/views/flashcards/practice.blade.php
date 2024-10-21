@@ -58,19 +58,16 @@
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
-         <!-- TODO foreachをやめて、forにして。表と裏を１つのdive要素に埋める。
-          
-         -->
-        <!-- 表と裏のコンテンツを一つのdivにまとめて表示 -->
         @for ($i = 0; $i < count($flashcard->contents); $i += 2)
-            <div class="flashcard-container" data-back-content="{{ $flashcard->contents[$i+1]->content ?? '裏のカードがありません' }}">
+            <div class="flashcard-container" 
+                 data-front-content="{{ e($flashcard->contents[$i]->content) }}" 
+                 data-back-content="{{ e($flashcard->contents[$i+1]->content ?? '裏のカードがありません') }}">
                 <!-- 表面の表示 -->
                 <span class="flashcard-front">
                     {{ $flashcard->contents[$i]->content }} <!-- 表の内容 -->
                 </span>
             </div>
         @endfor
-
 
         <!-- ボタンで他のページに戻る -->
         <div class="text-center mt-4">
@@ -80,26 +77,55 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 全てのフラッシュカードにクリックイベントを追加
+            let isVoiceEnabled = true; // 音声のON/OFF状態
+            let selectedRate = 1.0; // 音声速度の初期値
+
+            // フラッシュカードの表と裏を切り替え、音声を再生
             document.querySelectorAll('.flashcard-container').forEach(function(card) {
                 let isFront = true; // 表か裏かの状態を管理
-                const front = card.querySelector('.flashcard-front');
-                const backContent = card.getAttribute('data-back-content'); // 裏面の内容をdata属性から取得
+                const frontContent = card.getAttribute('data-front-content');
+                const backContent = card.getAttribute('data-back-content');
+                const frontSpan = card.querySelector('.flashcard-front');
 
-                // カードをクリックしたら表と裏を切り替える
                 card.addEventListener('click', function() {
                     if (isFront) {
-                        front.innerText = backContent;  // 裏の内容を表示
+                        frontSpan.innerText = backContent; // 裏の内容を表示
+                        if (isVoiceEnabled) {
+                            speakText(backContent, 'ja-JP', selectedRate); // 裏面を読み上げ（日本語）
+                        }
                     } else {
-                        front.innerText = front.getAttribute('data-original-front') || front.innerText;  // 元の表の内容を表示
+                        frontSpan.innerText = frontContent; // 表の内容を表示
+                        if (isVoiceEnabled) {
+                            speakText(frontContent, 'en-US', selectedRate); // 表面を読み上げ（英語）
+                        }
                     }
-                    isFront = !isFront;  // 表裏の状態を切り替え
+                    isFront = !isFront; // 表裏の状態を切り替え
                 });
-
-                // 表面の内容を保存 (初期状態)
-                front.setAttribute('data-original-front', front.innerText);
             });
         });
-    </script>
 
+        // テキストを読み上げる関数
+        function speakText(text, lang = 'en-US', rate = 1.0) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = rate;
+
+                // 音声が利用可能な場合は音声を再生
+                function speak() {
+                    const voices = window.speechSynthesis.getVoices();
+                    utterance.voice = voices.find(voice => voice.lang === lang) || null;
+                    window.speechSynthesis.speak(utterance);
+                }
+
+                if (window.speechSynthesis.getVoices().length === 0) {
+                    window.speechSynthesis.addEventListener('voiceschanged', speak);
+                } else {
+                    speak();
+                }
+            } else {
+                alert('このブラウザは音声合成APIをサポートしていません。');
+            }
+        }
+    </script>
 @endsection
