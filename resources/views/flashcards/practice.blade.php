@@ -55,9 +55,10 @@
 
         <!-- フラッシュカードの内容を表示 -->
         @for ($i = 0; $i < count($contents); $i += 2)
-
             @php
+                // Left joinをすると遅くなるらしいのでviewで頑張ってみた。
                 $frontContent = $contents[$i];
+                // 裏のカードがない場合は、null
                 $backContent = isset($contents[$i+1]) ? $contents[$i+1] : null;
             @endphp
             <div class="flashcard-container" 
