@@ -62,7 +62,7 @@
         <div id="menuContent" class="collapse">
             <!-- メニュー項目 -->
             <ul class="list-group">
-                <!-- 英語にして -->
+                <!-- TODO 英語にして -->
                 <li class="list-group-item"><a href="#">新しいカード追加</a></li>
                 <li class="list-group-item"><a href="#">CSV出力</a></li>
                 <li class="list-group-item"><a href="#">Excel出力</a></li>
@@ -71,25 +71,24 @@
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
-        @for ($i = 0; $i < count($contents); $i += 2)
+        <!-- コレクションの機能を使いLaravelっぽくリファクタ -->
+        @foreach ($contents->chunk(2) as $chunk)
             @php
-                // Left joinをすると遅くなるらしいのでviewで頑張ってみた。
-                $frontContent = $contents[$i];
-                // 裏のカードがない場合は、null
-                $backContent = isset($contents[$i+1]) ? $contents[$i+1] : null;
+                $frontContent = $chunk->first();
+                $backContent = $chunk->count() > 1 ? $chunk->last() : null;
             @endphp
             <div class="flashcard-container" 
                 data-front-content="{{ e($frontContent->content) }}" 
-                data-front-language_code="{{ $frontContent->language->language_code }}"
+                data-front-language_code="{{ e($frontContent->language->language_code) }}"
                 data-back-content="{{ e($backContent ? $backContent->content : '裏のカードがありません') }}"
-                data-back-language_code="{{ $backContent ? $backContent->language->language_code : '' }}"
-                >
+                data-back-language_code="{{ e($backContent ? $backContent->language->language_code : '') }}"
+            >
                 <!-- 表面の表示 -->
                 <span class="flashcard-front">
                     {{ $frontContent->content }} <!-- 表の内容 -->
                 </span>
             </div>
-        @endfor
+        @endforeach
 
         <!-- 一覧に戻るボタン -->
         <div class="text-center mt-4">
