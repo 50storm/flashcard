@@ -19,7 +19,7 @@
         }
 
         .flashcard-back {
-            display: none; /* 裏面は非表示 */
+            display: none;
         }
 
         .header-icon {
@@ -31,26 +31,43 @@
 
         .menu-icon, .user-icon {
             font-size: 30px;
+            cursor: pointer;
         }
 
-        .menu-icon, .user-icon {
-            cursor: pointer;
+        /* メニューのスタイル */
+        #menuContent {
+            margin-bottom: 20px;
         }
     </style>
 @endsection
 
 @section('content')
     <div class="container">
+        <!-- ヘッダー部分 -->
         <div class="header-icon">
-            <!-- ハンバーガーメニューアイコン -->
-            <div class="menu-icon">
-                &#9776; ビジネス英会話
-            </div>
+            <!-- メニューボタン -->
+            <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#menuContent" aria-expanded="false" aria-controls="menuContent">
+                <span>&#9776;</span>
+            </button>
+
+            <h1>ビジネス英会話</h1>
 
             <!-- ユーザーアイコン -->
             <div class="user-icon">
                 <span class="material-icons">person</span>
             </div>
+        </div>
+
+        <!-- メニューコンテンツ -->
+        <div id="menuContent" class="collapse">
+            <!-- メニュー項目 -->
+            <ul class="list-group">
+                <!-- 英語にして -->
+                <li class="list-group-item"><a href="#">新しいカード追加</a></li>
+                <li class="list-group-item"><a href="#">CSV出力</a></li>
+                <li class="list-group-item"><a href="#">Excel出力</a></li>
+                <li class="list-group-item"><a href="#">HTML出力</a></li>
+            </ul>
         </div>
 
         <!-- フラッシュカードの内容を表示 -->
@@ -74,99 +91,92 @@
             </div>
         @endfor
 
-        <!-- ボタンで他のページに戻る -->
+        <!-- 一覧に戻るボタン -->
         <div class="text-center mt-4">
             <a href="{{ route('flashcards.index') }}" class="btn btn-secondary">一覧に戻る</a>
         </div>
     </div>
 
+    <!-- あなたのカスタムスクリプト -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let isVoiceEnabled = true; // 音声のON/OFF状態
-            let selectedRate = 1.0; // 音声速度の初期値
+            let isVoiceEnabled = true;
+            let selectedRate = 1.0;
 
-            // フラッシュカードの表と裏を切り替え、音声を再生
+            // フラッシュカードの機能
             document.querySelectorAll('.flashcard-container').forEach(function(card) {
-                let isFront = true; // 表か裏かの状態を管理
+                let isFront = true;
                 const frontContent = card.getAttribute('data-front-content');
                 const backContent = card.getAttribute('data-back-content');
-                const frontLangCode = card.getAttribute('data-front-language_code');
-                const backLangCode = card.getAttribute('data-back-language_code');
-                
+                const frontLangCode = card.getAttribute('data-front-language_code') || 'en-US';
+                const backLangCode = card.getAttribute('data-back-language_code') || 'ja';
                 const frontSpan = card.querySelector('.flashcard-front');
 
                 card.addEventListener('click', function() {
-                    // After speaking, the content should be changed
                     if (isFront) {
                         if (isVoiceEnabled) {
                             speakText(frontContent, frontLangCode, selectedRate, function() {
-                                frontSpan.innerText = backContent; // Show back content
-                                isFront = false; // Set state to back
+                                frontSpan.innerText = backContent;
+                                isFront = false;
                             });
                         } else {
-                            frontSpan.innerText = backContent; // Show back content
-                            isFront = false; // Set state to back
+                            frontSpan.innerText = backContent;
+                            isFront = false;
                         }
                     } else {
                         if (isVoiceEnabled) {
                             speakText(backContent, backLangCode, selectedRate, function() {
-                                frontSpan.innerText = frontContent; // Show front content
-                                isFront = true; // Set state to front
+                                frontSpan.innerText = frontContent;
+                                isFront = true;
                             });
                         } else {
-                            frontSpan.innerText = frontContent; // Show front content
-                            isFront = true; // Set state to front
+                            frontSpan.innerText = frontContent;
+                            isFront = true;
                         }
                     }
                 });
             });
 
-            // Log available voices to the console for debugging
-            window.speechSynthesis.onvoiceschanged = function() {
-                const voices = window.speechSynthesis.getVoices();
-                console.log('Available voices:', voices);
-            };
-        });
+            // テキストを読み上げる関数
+            function speakText(text, lang = 'en-US', rate = 1.0, onEndCallback) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = lang;
+                    utterance.rate = rate;
 
-        // Function to speak text with a callback after speech ends
-        function speakText(text, lang = 'en-US', rate = 1.0, onEndCallback) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = lang;
-                utterance.rate = rate;
-
-                // Set onend event handler
-                if (typeof onEndCallback === 'function') {
-                    utterance.onend = onEndCallback;
-                }
-
-                function speak() {
-                    const voices = window.speechSynthesis.getVoices();
-                    let selectedVoice = voices.find(voice => voice.lang === lang);
-
-                    // If exact match not found, try to find a voice that starts with the base language code
-                    if (!selectedVoice) {
-                        selectedVoice = voices.find(voice => voice.lang.startsWith(lang));
+                    if (typeof onEndCallback === 'function') {
+                        utterance.onend = onEndCallback;
                     }
 
-                    // If still not found, use default voice
-                    utterance.voice = selectedVoice || null;
+                    function speak() {
+                        const voices = window.speechSynthesis.getVoices();
+                        let selectedVoice = voices.find(voice => voice.lang === lang);
 
-                    window.speechSynthesis.speak(utterance);
-                }
+                        if (!selectedVoice) {
+                            selectedVoice = voices.find(voice => voice.lang.startsWith(lang.split('-')[0]));
+                        }
 
-                if (window.speechSynthesis.getVoices().length === 0) {
-                    window.speechSynthesis.addEventListener('voiceschanged', speak);
+                        if (!selectedVoice) {
+                            console.warn(`No voice found for language code: ${lang}`);
+                            selectedVoice = voices[0];
+                        }
+
+                        utterance.voice = selectedVoice;
+                        window.speechSynthesis.speak(utterance);
+                    }
+
+                    if (window.speechSynthesis.getVoices().length === 0) {
+                        window.speechSynthesis.addEventListener('voiceschanged', speak);
+                    } else {
+                        speak();
+                    }
                 } else {
-                    speak();
-                }
-            } else {
-                alert('このブラウザは音声合成APIをサポートしていません。');
-                // If speech synthesis not supported, call the callback immediately
-                if (typeof onEndCallback === 'function') {
-                    onEndCallback();
+                    alert('このブラウザは音声合成APIをサポートしていません。');
+                    if (typeof onEndCallback === 'function') {
+                        onEndCallback();
+                    }
                 }
             }
-        }
+        });
     </script>
 @endsection
