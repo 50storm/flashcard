@@ -19,7 +19,10 @@ Route::get('/export-users-csv', function () {
 });
 
 
+// Route::post('/flashcards/{flashcard}/add-card', [FlashcardController::class, 'addCard'])->name('flashcards.addCard');
+
 Route::get('flashcards/{id}/practice', [FlashcardController::class, 'practice'])->name('flashcards.practice');
 
 
-Route::resource('flashcards', FlashcardController::class);
+// TODO DELETはのぞきたい
+// Route::resource('flashcards', FlashcardController::class);
