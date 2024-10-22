@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
+@section('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('styles')
     <style>
+        /* 既存のスタイル */
         .flashcard-container {
             border: 1px solid #000;
             padding: 20px;
@@ -98,13 +103,12 @@
         </div>
     </div>
 
-
     <!-- 新しいカードを追加するモーダル -->
     <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
             <!-- TODO ajaxで -->
-        <form id="addCardForm" method="POST" action="{{ route('api.contents.store', $flashcard->id) }}">
+        <form id="addCardForm" method="POST" action="{{ route('api.contents.storeFrontAndBackContents', $flashcard->id) }}">
             @csrf
             <div class="modal-header">
               <h5 class="modal-title" id="addCardModalLabel">Add New Card</h5>
@@ -227,10 +231,131 @@
                 }
             }
 
-            // ------ TODO ------
+            // ------ 追加するコード ------
             // "Add New Card"フォームの送信をAJAXで処理
             //  新しいフラッシュカードをDOMに追加する関数
 
+            // フォーム、モーダル、コンテナの取得
+            const addCardForm = document.getElementById('addCardForm');
+            const addCardModal = new bootstrap.Modal(document.getElementById('addCardModal'));
+            const flashcardsContainer = document.querySelector('.container'); // フラッシュカードが含まれるコンテナを指定
+
+            addCardForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // デフォルトのフォーム送信を防ぐ
+
+                // フォームデータの取得
+                const frontContent = document.getElementById('frontContent').value.trim();
+                const backContent = document.getElementById('backContent').value.trim();
+                const frontLanguage = document.getElementById('frontLanguage').value.trim();
+                const backLanguage = document.getElementById('backLanguage').value.trim();
+
+                // バリデーション（簡易）
+                if (!frontContent || !backContent || !frontLanguage || !backLanguage) {
+                    alert('全てのフィールドを入力してください。');
+                    return;
+                }
+
+                // ペイロードの作成
+                const payload = {
+                    contents: [
+                        {
+                            content: frontContent,
+                            language_code: frontLanguage,
+                            side_type: 0
+                        },
+                        {
+                            content: backContent,
+                            language_code: backLanguage,
+                            side_type: 1
+                        }
+                    ]
+                };
+
+                // CSRFトークンの取得
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                // APIエンドポイントのURL（動的に取得）
+                const apiUrl = addCardForm.getAttribute('action');
+
+                // AJAXリクエストの送信
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            // バリデーションエラーがある場合
+                            const errorMessage = errorData.errors && errorData.errors.contents ? errorData.errors.contents.join(', ') : 'エラーが発生しました。';
+                            throw new Error(errorMessage);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 成功時の処理
+                    // 新しいフラッシュカードをDOMに追加
+                    addNewFlashcardToDOM(data);
+
+                    // フォームのリセット
+                    addCardForm.reset();
+
+                    // モーダルを閉じる
+                    addCardModal.hide();
+
+                    alert('新しいカードが追加されました。');
+                })
+                .catch(error => {
+                    // エラーハンドリング
+                    console.error('Error:', error);
+                    alert(`カードの追加に失敗しました。: ${error.message}`);
+                });
+            });
+
+            // 新しいフラッシュカードをDOMに追加する関数
+            function addNewFlashcardToDOM(data) {
+                // data.contents がフロントとバックの内容を含むと仮定
+                const contents = data.contents;
+
+                // デバッグ用にログを出力
+                console.log('Received data:', data);
+
+                const frontContent = contents.find(c => c.side_type === 0);
+                const backContent = contents.find(c => c.side_type === 1);
+
+                // 必要なデータが揃っているか確認
+                if (!frontContent || !backContent) {
+                    console.error('フロントまたはバックの内容が不足しています。');
+                    alert('カードの追加に失敗しました。データが不完全です。');
+                    return;
+                }
+
+                // 新しいフラッシュカードのHTMLを作成
+                const flashcardDiv = document.createElement('div');
+                flashcardDiv.classList.add('flashcard-container');
+                flashcardDiv.setAttribute('data-front-content', frontContent.content);
+                flashcardDiv.setAttribute('data-front-language_code', frontContent.language_code);
+                flashcardDiv.setAttribute('data-back-content', backContent.content);
+                flashcardDiv.setAttribute('data-back-language_code', backContent.language_code);
+
+                // 表面の内容を設定
+                flashcardDiv.innerHTML = `
+                    <span class="flashcard-front">
+                        ${frontContent.content}
+                    </span>
+                `;
+
+                // フラッシュカードを既存のカードの最後に追加
+                flashcardsContainer.appendChild(flashcardDiv);
+
+                // 新しいカードにイベントを設定
+                attachFlashcardEvent(flashcardDiv);
+            }
         });
     </script>
 @endsection
