@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu" />
     <!-- Section for Page-specific Styles -->
     @yield('styles')
+    @yield('head')
 </head>
 <body>
     <div id="app" class="container mt-5">

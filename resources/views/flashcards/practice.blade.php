@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('head')
+    <!-- CSRFトークンのメタタグをheadセクションに追加 -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('styles')
     <style>
-        /* 既存のスタイル */
         .flashcard-container {
             border: 1px solid #000;
             padding: 20px;
@@ -43,6 +43,11 @@
         #menuContent {
             margin-bottom: 20px;
         }
+
+        /* フラッシュカードのリストコンテナ */
+        .flashcards-list {
+            margin-top: 20px;
+        }
     </style>
 @endsection
 
@@ -77,25 +82,27 @@
             </ul>
         </div>
 
-        <!-- フラッシュカードの内容を表示 -->
-        <!-- コレクションの機能を使いLaravelっぽくリファクタ -->
-        @foreach ($flashcard->contents->chunk(2) as $chunk)
-            @php
-                $frontContent = $chunk->first();
-                $backContent = $chunk->count() > 1 ? $chunk->last() : null;
-            @endphp
-            <div class="flashcard-container" 
-                data-front-content="{{ e($frontContent->content) }}" 
-                data-front-language_code="{{ e($frontContent->language->language_code) }}"
-                data-back-content="{{ e($backContent ? $backContent->content : '裏のカードがありません') }}"
-                data-back-language_code="{{ e($backContent ? $backContent->language->language_code : '') }}"
-            >
-                <!-- 表面の表示 -->
-                <span class="flashcard-front">
-                    {{ $frontContent->content }} <!-- 表の内容 -->
-                </span>
-            </div>
-        @endforeach
+        <!-- フラッシュカードのリスト -->
+        <div class="flashcards-list">
+            <!-- フラッシュカードの内容を表示 -->
+            @foreach ($flashcard->contents->chunk(2) as $chunk)
+                @php
+                    $frontContent = $chunk->first();
+                    $backContent = $chunk->count() > 1 ? $chunk->last() : null;
+                @endphp
+                <div class="flashcard-container" 
+                    data-front-content="{{ e($frontContent->content) }}" 
+                    data-front-language_code="{{ e($frontContent->language->language_code) }}"
+                    data-back-content="{{ e($backContent ? $backContent->content : '裏のカードがありません') }}"
+                    data-back-language_code="{{ e($backContent ? $backContent->language->language_code : '') }}"
+                >
+                    <!-- 表面の表示 -->
+                    <span class="flashcard-front">
+                        {{ $frontContent->content }} <!-- 表の内容 -->
+                    </span>
+                </div>
+            @endforeach
+        </div>
 
         <!-- 一覧に戻るボタン -->
         <div class="text-center mt-4">
@@ -238,7 +245,7 @@
             // フォーム、モーダル、コンテナの取得
             const addCardForm = document.getElementById('addCardForm');
             const addCardModal = new bootstrap.Modal(document.getElementById('addCardModal'));
-            const flashcardsContainer = document.querySelector('.container'); // フラッシュカードが含まれるコンテナを指定
+            const flashcardsContainer = document.querySelector('.flashcards-list'); // フラッシュカードが含まれるコンテナを指定
 
             addCardForm.addEventListener('submit', function(event) {
                 event.preventDefault(); // デフォルトのフォーム送信を防ぐ
@@ -271,7 +278,8 @@
                     ]
                 };
 
-                // CSRFトークンの取得
+                // CSRFトークンの取得（headセクションに追加したmetaタグから）
+                debugger;
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                 // APIエンドポイントのURL（動的に取得）
@@ -319,11 +327,11 @@
 
             // 新しいフラッシュカードをDOMに追加する関数
             function addNewFlashcardToDOM(data) {
-                // data.contents がフロントとバックの内容を含むと仮定
-                const contents = data.contents;
-
                 // デバッグ用にログを出力
                 console.log('Received data:', data);
+
+                // data.contents がフロントとバックの内容を含むと仮定
+                const contents = data.contents;
 
                 const frontContent = contents.find(c => c.side_type === 0);
                 const backContent = contents.find(c => c.side_type === 1);
