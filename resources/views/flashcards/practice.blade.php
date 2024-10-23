@@ -296,6 +296,7 @@
                     body: JSON.stringify(payload)
                 })
                 .then(response => {
+                    debugger;
                     if (!response.ok) {
                         return response.json().then(errorData => {
                             // バリデーションエラーがある場合
@@ -306,6 +307,7 @@
                     return response.json();
                 })
                 .then(data => {
+                    debugger;
                     // 成功時の処理
                     // 新しいフラッシュカードをDOMに追加
                     addNewFlashcardToDOM(data);

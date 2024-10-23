@@ -25,4 +25,4 @@ Route::get('flashcards/{id}/practice', [FlashcardController::class, 'practice'])
 
 
 // TODO DELETはのぞきたい
-// Route::resource('flashcards', FlashcardController::class);
+Route::resource('flashcards', FlashcardController::class)->except(['destroy']);// 
