@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Flashcard;
+use App\Models\Language;
 use Illuminate\Http\Request;
 
 class FlashcardController extends Controller
@@ -26,8 +27,9 @@ class FlashcardController extends Controller
                           ->where('user_id', 1) // 条件として特定のユーザーID
                           ->where('id', $id) // 指定されたフラッシュカードのID
                           ->firstOrFail(); // 1つの結果を取得し、なければ404エラー
+        $languages = Language::all();
         // 'practice'ビューにフラッシュカードのデータを渡す
-        return view('flashcards.practice', compact('flashcard'));
+        return view('flashcards.practice', compact('flashcard', 'languages'));
     }
     // フラッシュカードを追加するフォーム
     public function create()

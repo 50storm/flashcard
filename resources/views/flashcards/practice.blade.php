@@ -132,15 +132,31 @@
                 <label for="backContent" class="form-label">Back Side Content</label>
                 <textarea class="form-control" id="backContent" name="backContent" rows="3" required></textarea>
               </div>
-              <!-- Language Codes (Optional) -->
-              <div class="mb-3">
-                <label for="frontLanguage" class="form-label">Front Side Language Code</label>
-                <input type="text" class="form-control" id="frontLanguage" name="frontLanguage" value="en-US" required>
-              </div>
-              <div class="mb-3">
-                <label for="backLanguage" class="form-label">Back Side Language Code</label>
-                <input type="text" class="form-control" id="backLanguage" name="backLanguage" value="ja" required>
-              </div>
+             <!-- Front Language Code (Dropdown) -->
+             <div class="mb-3">
+                <label for="frontLanguage" class="form-label">Front Side Language</label>
+                <select class="form-select" id="frontLanguage" name="frontContent[language_code]" required>
+                    <option value="" disabled selected>Select Language</option>
+                        @foreach($languages as $language)
+                            <option value="{{ $language->language_code }}" {{ old('frontContent.language_code') == $language->language_code ? 'selected' : '' }}>
+                                {{ $language->language }} ({{ $language->language_code }})
+                            </option>
+                        @endforeach
+                </select>
+            </div>
+            <!-- Back Language Code (Dropdown) -->
+            <div class="mb-3">
+                <label for="backLanguage" class="form-label">Back Side Language</label>
+                <select class="form-select" id="backLanguage" name="backContent[language_code]" required>
+                    <option value="" disabled selected>Select Language</option>
+                    @foreach($languages as $language)
+                        <option value="{{ $language->language_code }}" {{ old('backContent.language_code') == $language->language_code ? 'selected' : '' }}>
+                            {{ $language->language }} ({{ $language->language_code }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
