@@ -72,11 +72,13 @@
 
                                     <h6>Contents:</h6>
                                     <ul>
-                                        @foreach ($flashcard->contents as $content)
-                                            <li>{{ $content->content }} (Language: {{ $content->language_id }})</li>
+                                        @foreach ($flashcard->pairs as $pair)
+                                            <li>
+                                                <strong>Front:</strong> {{ $pair->frontContent->content ?? 'N/A' }}<br>
+                                                <strong>Back:</strong> {{ $pair->backContent->content ?? 'N/A' }}
+                                            </li>
                                         @endforeach
                                     </ul>
-
                                     <p><strong>Created At:</strong> {{ $flashcard->created_at }}</p>
                                     <p><strong>Updated At:</strong> {{ $flashcard->updated_at }}</p>
 

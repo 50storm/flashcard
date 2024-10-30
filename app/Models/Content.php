@@ -46,4 +46,18 @@ class Content extends Model
         return $this->belongsToMany(Flashcard::class, 'flashcard_content', 'content_id', 'flashcard_id')
                     ->withPivot('side_type'); // 中間テーブルのフィールドも取得
     }
+
+    /**
+     * FlashcardPairsとのリレーション
+     */
+    public function flashcardPairsAsFront()
+    {
+        return $this->hasMany(FlashcardPair::class, 'front_content_id');
+    }
+
+    public function flashcardPairsAsBack()
+    {
+        return $this->hasMany(FlashcardPair::class, 'back_content_id');
+    }
+
 }

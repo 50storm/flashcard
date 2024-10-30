@@ -85,20 +85,16 @@
         <!-- フラッシュカードのリスト -->
         <div class="flashcards-list">
             <!-- フラッシュカードの内容を表示 -->
-            @foreach ($flashcard->contents->chunk(2) as $chunk)
-                @php
-                    $frontContent = $chunk->first();
-                    $backContent = $chunk->count() > 1 ? $chunk->last() : null;
-                @endphp
+            @foreach ($flashcard->pairs as $pair)
                 <div class="flashcard-container" 
-                    data-front-content="{{ e($frontContent->content) }}" 
-                    data-front-language_code="{{ e($frontContent->language->language_code) }}"
-                    data-back-content="{{ e($backContent ? $backContent->content : '裏のカードがありません') }}"
-                    data-back-language_code="{{ e($backContent ? $backContent->language->language_code : '') }}"
+                    data-front-content="{{ $pair->frontContent->content ?? 'N/A' }}" 
+                    data-front-language_code="{{ $pair->frontContent->language->language_code ?? '' }}"
+                    data-back-content="{{ $pair->backContent->content ?? 'N/A' }}"
+                    data-back-language_code="{{ $pair->frontContent->language->language_code ?? '' }}"
                 >
                     <!-- 表面の表示 -->
                     <span class="flashcard-front">
-                        {{ $frontContent->content }} <!-- 表の内容 -->
+                        {{ $pair->frontContent->content }} 
                     </span>
                 </div>
             @endforeach
@@ -171,6 +167,7 @@
     <!-- あなたのカスタムスクリプト -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            debugger;
             let isVoiceEnabled = true;
             let selectedRate = 1.0;
 

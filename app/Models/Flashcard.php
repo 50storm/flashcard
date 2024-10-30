@@ -42,4 +42,11 @@ class Flashcard extends Model
         return $this->hasMany(FlashcardContent::class, 'flashcard_id');
     }
 
+    /**
+     * FlashcardPairとのリレーション
+     */
+    public function pairs()
+    {
+        return $this->hasMany(FlashcardPair::class);
+    }
 }

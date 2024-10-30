@@ -12,7 +12,7 @@ class FlashcardController extends Controller
     public function index()
     {
         // contentをEager Loadingで取得
-        $flashcards = Flashcard::with('contents')->get();
+        $flashcards = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])->get();
         return view('flashcards.index', compact('flashcards'));
     }
 
@@ -23,7 +23,7 @@ class FlashcardController extends Controller
     {
         // 中間テーブルも取得する
         // Note: Joinよりもeager loadingが早いらしい。
-        $flashcard = Flashcard::with('contents.language')
+        $flashcard = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])
                           ->where('user_id', 1) // 条件として特定のユーザーID
                           ->where('id', $id) // 指定されたフラッシュカードのID
                           ->firstOrFail(); // 1つの結果を取得し、なければ404エラー
