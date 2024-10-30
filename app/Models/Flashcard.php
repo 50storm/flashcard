@@ -30,19 +30,6 @@ class Flashcard extends Model
     }
 
     /**
-     * フラッシュカードと関連するコンテンツ（中間テーブル: flashcard_contents）のリレーションを定義
-     * 
-     * このメソッドは、FlashcardContentモデルとの1対多のリレーションを表します。
-     * FlashcardContentテーブルには、flashcard_idによって関連付けられたコンテンツ情報が格納されています。
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function flashcardContents()
-    {
-        return $this->hasMany(FlashcardContent::class, 'flashcard_id');
-    }
-
-    /**
      * FlashcardPairとのリレーション
      */
     public function pairs()
