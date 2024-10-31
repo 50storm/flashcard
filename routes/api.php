@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlashcardController;
 use App\Http\Controllers\FlashcardApiController;
 use App\Http\Controllers\ContentApiController;
+use App\Http\Controllers\FlashcardPairApiController;
 
 // API認証の例
 // Route::get('/user', function (Request $request) {
@@ -21,6 +22,8 @@ Route::delete('/flashcards/{id}', [FlashcardApiController::class, 'destroy'])->n
 
 // フロントとバックのコンテンツを一度に登録するエンドポイント
 Route::post('/flashcards/{flashcardId}/contents', [ContentApiController::class, 'storeFrontAndBackContents'])->name('api.contents.storeFrontAndBackContents');
+
+Route::post('/flashcards/{flashcardId}/pair/create', [FlashcardPairApiController::class, 'createPair']);
 
 // フロントとバックのコンテンツを一度に更新するエンドポイント
 // Route::put('/flashcards/{flashcardId}/contents/update', [ContentApiController::class, 'updateFrontAndBackContents'])->name('api.contents.updateFrontAndBackContents');
