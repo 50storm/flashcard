@@ -85,6 +85,74 @@ class FlashcardPairApiController extends Controller
         ], 201);
     }
 
+    // Get a flashcard pair's details
+    public function getPair($pairId)
+    {
+        $pair = FlashcardPair::with(['frontContent', 'backContent'])->findOrFail($pairId);
+
+        return response()->json([
+            'front_content' => [
+                'content' => $pair->frontContent->content,
+                'language_code' => $pair->frontContent->language->language_code,
+            ],
+            'back_content' => [
+                'content' => $pair->backContent->content,
+                'language_code' => $pair->backContent->language->language_code,
+            ],
+        ]);
+    }
+
+        // Update a flashcard pair
+        public function updatePair(Request $request, $pairId)
+        {
+            // Validate the incoming request
+            $validatedData = $request->validate([
+                'pair' => 'required|array|size:2',
+                'pair.*.language_code' => 'required|string',
+                'pair.0.frontContent' => 'required|string',
+                'pair.1.BackContent' => 'required|string',
+            ]);
+    
+            // Find the flashcard pair
+            $flashcardPair = FlashcardPair::with(['frontContent', 'backContent'])->findOrFail($pairId);
+    
+            // Update front content
+            $frontLanguage = Language::where('language_code', $validatedData['pair'][0]['language_code'])->firstOrFail();
+            $flashcardPair->frontContent->update([
+                'content' => $validatedData['pair'][0]['frontContent'],
+                'language_id' => $frontLanguage->id,
+            ]);
+    
+            // Update back content
+            $backLanguage = Language::where('language_code', $validatedData['pair'][1]['language_code'])->firstOrFail();
+            $flashcardPair->backContent->update([
+                'content' => $validatedData['pair'][1]['BackContent'],
+                'language_id' => $backLanguage->id,
+            ]);
+    
+            // Reload relationships
+            $flashcardPair->load(['frontContent', 'backContent']);
+    
+            // Return the response with the updated data
+            return response()->json([
+                'message' => 'Flashcard pair updated successfully',
+                'flashcard_pair' => [
+                    'id' => $flashcardPair->id,
+                    'flashcard_id' => $flashcardPair->flashcard_id,
+                    'front_content' => [
+                        'id' => $flashcardPair->frontContent->id,
+                        'content' => $flashcardPair->frontContent->content,
+                        'language_code' => $flashcardPair->frontContent->language->language_code,
+                    ],
+                    'back_content' => [
+                        'id' => $flashcardPair->backContent->id,
+                        'content' => $flashcardPair->backContent->content,
+                        'language_code' => $flashcardPair->backContent->language->language_code,
+                    ],
+                ],
+            ], 200);
+        }
+
     // ペアの削除
     public function deletePair($pairId)
     {
