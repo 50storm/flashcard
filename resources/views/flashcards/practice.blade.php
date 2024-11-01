@@ -73,6 +73,7 @@
         </div>
 
         <!-- フラッシュカードのリスト -->
+         <!-- TODO 削除と編集ボタンの追加 -->
         <div class="flashcards-list">
             @foreach ($flashcard->pairs as $pair)
                 <div class="flashcard-container" 
@@ -80,10 +81,16 @@
                     data-front-language_code="{{ $pair->frontContent->language->language_code ?? '' }}"
                     data-back-content="{{ $pair->backContent->content ?? 'N/A' }}"
                     data-back-language_code="{{ $pair->backContent->language->language_code ?? '' }}"
+                    style="background-color: pink;"
                 >
                     <span class="flashcard-front">
                         {{ $pair->frontContent->content }} 
                     </span>
+                    <!-- Edit and Delete Buttons -->
+                    <div class="mt-2">
+                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $pair->id }}">Edit</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $pair->id }}">Delete</button>
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -320,6 +327,44 @@
                 flashcardsContainer.appendChild(flashcardDiv);
                 attachFlashcardEvent(flashcardDiv);
             }
+            // Handle Delete Button Click
+            document.querySelectorAll('.delete-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const pairId = this.getAttribute('data-id');
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    debugger;
+
+                    if (confirm('Are you sure you want to delete this flashcard?')) {
+                        fetch(`/api/flashcards/pairs/${pairId}/delete`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to delete flashcard.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            alert('Flashcard deleted successfully.');
+                            // Remove the flashcard from the DOM
+                            this.closest('.flashcard-container').remove();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert(`Failed to delete flashcard: ${error.message}`);
+                        });
+                    }
+                });
+            });
+
+            // Handle Edit Button Click
+            document.querySelectorAll('.edit-btn').forEach(function(button) {
+            //  TODO  新規登録と同じようにモーダルを立ち上げて、更新
+            });
         });
     </script>
 @endsection

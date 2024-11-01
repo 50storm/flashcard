@@ -84,4 +84,14 @@ class FlashcardPairApiController extends Controller
             ],
         ], 201);
     }
+
+    // ペアの削除
+    public function deletePair($pairId)
+    {
+        $pair = FlashcardPair::findOrFail($pairId);
+        $pair->delete();
+
+        return response()->json(['message' => 'Flashcard pair deleted successfully.']);
+    }
+
 }

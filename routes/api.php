@@ -24,6 +24,11 @@ Route::delete('/flashcards/{id}', [FlashcardApiController::class, 'destroy'])->n
 Route::post('/flashcards/{flashcardId}/contents', [ContentApiController::class, 'storeFrontAndBackContents'])->name('api.contents.storeFrontAndBackContents');
 
 Route::post('/flashcards/{flashcardId}/pair/create', [FlashcardPairApiController::class, 'createPair']);
+// カードペアの更新
+// Route::post('/api/flashcards/pairs/{pairId}/update', [FlashcardPairApiController::class, 'updatePair']);
+// カードペアの削除
+Route::delete('/flashcards/pairs/{pairId}/delete', [FlashcardPairApiController::class, 'deletePair']);
+
 
 // フロントとバックのコンテンツを一度に更新するエンドポイント
 // Route::put('/flashcards/{flashcardId}/contents/update', [ContentApiController::class, 'updateFrontAndBackContents'])->name('api.contents.updateFrontAndBackContents');
