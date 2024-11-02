@@ -190,13 +190,14 @@
             // Function to attach flashcard events
             function attachFlashcardEvent(card) {
                 let isFront = true;
-                const frontContent = card.getAttribute('data-front-content');
-                const backContent = card.getAttribute('data-back-content');
-                const frontLangCode = card.getAttribute('data-front-language_code') || 'en-US';
-                const backLangCode = card.getAttribute('data-back-language_code') || 'ja';
-                const frontSpan = card.querySelector('.flashcard-front');
-
+                
                 card.addEventListener('click', function() {
+                    const frontContent = card.getAttribute('data-front-content');
+                    const backContent = card.getAttribute('data-back-content');
+                    const frontLangCode = card.getAttribute('data-front-language_code') || 'en-US';
+                    const backLangCode = card.getAttribute('data-back-language_code') || 'ja';
+                    const frontSpan = card.querySelector('.flashcard-front');
+
                     if (isFront) {
                         if (isVoiceEnabled) {
                             speakText(frontContent, frontLangCode, selectedRate, function() {
