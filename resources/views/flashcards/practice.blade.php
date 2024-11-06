@@ -90,7 +90,7 @@
                 <li class="list-group-item">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#addCardModal">Add New Card</a>
                 </li>
-                <li class="list-group-item"><a href="#">Export CSV</a></li>
+                <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export') }}">Export CSV</a></li>
                 <li class="list-group-item"><a href="#">Export Excel</a></li>
                 <li class="list-group-item"><a href="#">Export HTML</a></li>
             </ul>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Flashcard;
 use App\Models\Language;
+use App\Exports\FlashCardsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 
 class FlashcardController extends Controller
@@ -81,5 +83,10 @@ class FlashcardController extends Controller
 
         return redirect()->route('flashcards.index')
                         ->with('success', 'Flashcard deleted successfully.');
+    }
+
+    public function exportFlashCardById($id)
+    {
+        return Excel::download(new FlashCardsExport($id), 'flash_card_' . $id . '.csv');
     }
 }
