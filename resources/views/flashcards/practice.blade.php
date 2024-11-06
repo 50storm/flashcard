@@ -72,7 +72,9 @@
                 <span>&#9776;</span>
             </button>
 
-            <h1>ビジネス英会話</h1>
+            @if(!empty($flashcard->name))
+               <h1>{{$flashcard->name}}</h1>
+            @endif
 
             <!-- ユーザーアイコン -->
             <div class="user-icon">
@@ -118,6 +120,13 @@
                 </div>
             @endforeach
         </div>
+
+        @empty($flashcard->name)
+        <div class="text-center mt-4">
+                <h1>No Card</h1>
+        </div>
+        @endempty
+
 
         <!-- 一覧に戻るボタン -->
         <div class="text-center mt-4">
