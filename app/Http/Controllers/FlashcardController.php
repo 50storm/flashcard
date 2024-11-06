@@ -6,6 +6,8 @@ use App\Models\Flashcard;
 use App\Models\Language;
 use App\Exports\FlashCardsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Excel as ExcelFormat;
+
 use Illuminate\Http\Request;
 
 class FlashcardController extends Controller
@@ -85,8 +87,34 @@ class FlashcardController extends Controller
                         ->with('success', 'Flashcard deleted successfully.');
     }
 
-    public function exportFlashCardById($id)
+    public function exportFlashCardById($id, $type)
     {
-        return Excel::download(new FlashCardsExport($id), 'flash_card_' . $id . '.csv');
+        // Determine the appropriate format and file extension
+        switch (strtolower($type)) {
+            case 'csv':
+                $format = ExcelFormat::CSV;
+                $extension = 'csv';
+                break;
+            case 'html':
+                $format = ExcelFormat::HTML;
+                $extension = 'html';
+                break;
+            case 'xlsx':
+                $format = ExcelFormat::XLSX;
+                $extension = 'xlsx';
+                break;
+            // case 'pdf':
+            //     $format = ExcelFormat::TCPDF;
+            //     $extension = 'pdf';
+            //     break;        
+            default:
+                $format = ExcelFormat::CSV;
+                $extension = 'csv';
+                // TODO フォントセット（日本語）
+                break;
+        }
+
+        // Export the file in the specified format
+        return Excel::download(new FlashCardsExport($id), 'flash_card_' . $id . '.' . $extension, $format);
     }
 }
