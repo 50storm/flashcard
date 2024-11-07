@@ -53,12 +53,15 @@
         /* Edit and Delete Buttons */
         .action-buttons {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 3px;
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically */
+            gap: 0px; /* Add some space between buttons */
         }
 
         .action-buttons .btn {
-            margin-left: 5px;
+            width: 60px;
         }
     </style>
 @endsection
@@ -96,10 +99,8 @@
                 <!-- <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export/pdf') }}">Export as PDF</a></li> -->
             </ul>
         </div>
-
         <!-- フラッシュカードのリスト -->
         <div class="flashcards-list">
-            <!-- フラッシュカードの内容を表示 -->
             @foreach ($flashcard->pairs as $pair)
                 <div class="flashcard-container" 
                     data-pair-id="{{ $pair->id }}"
