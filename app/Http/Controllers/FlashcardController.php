@@ -103,10 +103,10 @@ class FlashcardController extends Controller
                 $format = ExcelFormat::XLSX;
                 $extension = 'xlsx';
                 break;
-            // case 'pdf':
-            //     $format = ExcelFormat::TCPDF;
-            //     $extension = 'pdf';
-            //     break;        
+            case 'pdf':
+                $format = ExcelFormat::TCPDF;
+                $extension = 'pdf';
+                break;        
             default:
                 $format = ExcelFormat::CSV;
                 $extension = 'csv';

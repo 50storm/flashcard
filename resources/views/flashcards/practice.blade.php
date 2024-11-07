@@ -93,6 +93,7 @@
                 <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export/csv') }}">Export as CSV</a></li>
                 <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export/xlsx') }}">Export as Excel</a></li>
                 <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export/html') }}">Export as HTML</a></li>
+                <!-- <li class="list-group-item"><a href="{{ url('/flashcards/' . $flashcard->id . '/export/pdf') }}">Export as PDF</a></li> -->
             </ul>
         </div>
 
