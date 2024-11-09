@@ -81,8 +81,41 @@
             @endif
 
             <!-- ユーザーアイコン -->
-            <div class="user-icon">
+            <div class="user-icon" data-bs-toggle="modal" data-bs-target="#accountModal">
                 <span class="material-icons">person</span>
+            </div>
+        </div>
+
+        <!-- モーダル -->
+        <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="accountModalLabel">アカウント情報</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="POST">
+                            @csrf
+                            <!-- ユーザー名 -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">ユーザー名</label>
+                                <input type="text" class="form-control" id="username" name="username" value="">
+                            </div>
+
+                            <!-- メールアドレス -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">メールアドレス</label>
+                                <input type="email" class="form-control" id="email" name="email" value="">
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">ログアウト</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
