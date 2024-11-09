@@ -60,7 +60,7 @@
         /* Edit and Delete Buttons */
         .action-buttons {
             position: absolute;
-            top: 16px;
+            top: 22%;
             right: 3px;
         }
 
