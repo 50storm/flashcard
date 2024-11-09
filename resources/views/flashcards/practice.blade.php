@@ -9,7 +9,10 @@
     <style>
         .flashcard-container {
             border: 1px solid #000;
-            padding: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 20px;
+            padding-right: 30px;
             margin-bottom: 15px;
             text-align: center;
             font-size: 1.2em;
@@ -50,19 +53,17 @@
             margin-top: 20px;
         }
 
+        .flashcard-front {
+            background-color: red;
+            margin-right: 30px;
+        }
         /* Edit and Delete Buttons */
         .action-buttons {
             position: absolute;
-            top: 5px;
+            top: 16px;
             right: 3px;
-            display: flex;
-            flex-direction: column; /* Stack buttons vertically */
-            gap: 0px; /* Add some space between buttons */
         }
 
-        .action-buttons .btn {
-            width: 60px;
-        }
     </style>
 @endsection
 
@@ -100,6 +101,20 @@
             </ul>
         </div>
         <!-- フラッシュカードのリスト -->
+        <!-- <div class="flashcards-list">
+            <div class="flashcard-container">
+                <div class="flashcard-front-div" style="background-color: white; margin-right:30px;">
+                    <textarea class="flashcard-front" style="width:100%;height:100%;" readonly>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</textarea>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-warning btn-sm edit-btn" data-id="">
+                        <span class="material-symbols-outlined">
+                            edit
+                        </span> 
+                    </button>
+                </div>
+            </div>
+        </div> -->
         <div class="flashcards-list">
             @foreach ($flashcard->pairs as $pair)
                 <div class="flashcard-container" 
@@ -108,16 +123,19 @@
                     data-front-language_code="{{ $pair->frontContent->language->language_code ?? '' }}"
                     data-back-content="{{ $pair->backContent->content ?? 'N/A' }}"
                     data-back-language_code="{{ $pair->backContent->language->language_code ?? '' }}"
-                    style="background-color: pink;">
+                    style="background-color: withe;">
                     
-                    <span class="flashcard-front">
+                    <div class="flashcard-front" style="background-color: white;">
                         {{ $pair->frontContent->content }} 
-                    </span>
+                    </div>
 
                     <!-- Edit and Delete Buttons -->
                     <div class="action-buttons">
-                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $pair->id }}">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $pair->id }}">Delete</button>
+                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $pair->id }}">
+                            <span class="material-symbols-outlined">
+                            edit
+                            </span>
+                        </button>
                     </div>
                 </div>
             @endforeach
@@ -178,9 +196,14 @@
                     </select>
                   </div>
                 </div>
-                <div class="modal-footer">
+                <!-- <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Add Card</button>
+                </div> -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteCardBtn" style="display: none;">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
               </form>
         </div>
@@ -282,6 +305,17 @@
                 }
             }
 
+              // Reset the form when the modal is closed
+            addCardModalElement.addEventListener('hidden.bs.modal', function() {
+                addCardForm.reset();
+                addCardForm.setAttribute('action', `{{ action([App\Http\Controllers\FlashcardPairApiController::class, 'createPair'], ['flashcardId' => $flashcard->id]) }}`);
+                document.getElementById('addCardModalLabel').innerText = 'Add New Card';
+                addCardForm.querySelector('.btn-primary').innerText = 'Add Card';
+                deleteCardBtn.style.display = 'none'; // Hide the delete button
+                isEditMode = false;
+                editPairId = null;
+            });
+
             // Handle Delete Button Click
             document.querySelectorAll('.delete-btn').forEach(function(button) {
                 button.addEventListener('click', function(event) {
@@ -336,6 +370,7 @@
                             }
                             return response.json();
                         })
+                        
                         .then(data => {
                             // Populate the modal form fields with existing data
                             document.getElementById('frontContent').value = data.front_content.content;
@@ -349,6 +384,45 @@
                             // Change the modal title and submit button text
                             document.getElementById('addCardModalLabel').innerText = 'Edit Card';
                             addCardForm.querySelector('.btn-primary').innerText = 'Save Changes';
+
+                            // Show the delete button
+                            const deleteCardBtn = document.getElementById('deleteCardBtn');
+                            deleteCardBtn.style.display = 'block';
+
+                            // Add event listener for delete button
+                            deleteCardBtn.onclick = function() {
+                                if (confirm('このフラッシュカードを削除してもよろしいですか？')) {
+                                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                    
+                                    fetch(`/api/flashcards/pairs/${pairId}/delete`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': csrfToken,
+                                            'Accept': 'application/json'
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            return response.json().then(errorData => {
+                                                const errorMessage = errorData.errors ? errorData.errors.join(', ') : 'エラーが発生しました。';
+                                                throw new Error(errorMessage);
+                                            });
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        alert(data.message || 'フラッシュカードが削除されました。');
+                                        // Close the modal
+                                        addCardModal.hide();
+                                        // Remove the flashcard from the DOM
+                                        document.querySelector(`.flashcard-container[data-pair-id="${pairId}"]`).remove();
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        alert(`フラッシュカードの削除に失敗しました。: ${error.message}`);
+                                    });
+                                }
+                            };
 
                             // Set edit mode flag
                             isEditMode = true;
