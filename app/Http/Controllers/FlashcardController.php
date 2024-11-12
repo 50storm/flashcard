@@ -33,15 +33,10 @@ class FlashcardController extends Controller
      */
     public function practice($id)
     {
-        // 中間テーブルも取得する
-                // id が１の
-        // user情報を取得する
-        // usersテーブルにある
-        // IDが1のユーザー情報を取得
-        // usersテーブルから取得するが、ここでは明示的にEager Loadingは不要
+        // TODO とりあえず　users.idが1
+
         $user = User::find(1);
 
-        dd($user);
 
         // Note: Joinよりもeager loadingが早いらしい。
         $flashcard = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])

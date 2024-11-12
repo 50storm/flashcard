@@ -599,8 +599,9 @@
                         ${frontContent.content}
                     </span>
                     <div class="action-buttons">
-                        <button class="btn btn-warning btn-sm edit-btn" data-id="${data.id}">Edit</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${data.id}">Delete</button>
+                        <button class="btn btn-sm edit-btn" data-id="${data.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M160-400v-80h280v80H160Zm0-160v-80h440v80H160Zm0-160v-80h440v80H160Zm360 560v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T863-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z"/></svg>
+                        </button>
                     </div>
                 `;
 
@@ -612,7 +613,6 @@
 
                 // Attach Edit and Delete button event listeners
                 const newEditBtn = flashcardDiv.querySelector('.edit-btn');
-                const newDeleteBtn = flashcardDiv.querySelector('.delete-btn');
 
                 newEditBtn.addEventListener('click', function(event) {
                     event.stopPropagation(); // Prevent triggering the flashcard flip
@@ -639,7 +639,6 @@
                             addCardForm.setAttribute('action', `/api/flashcards/pairs/${pairId}/update`);
 
                             // Change the modal title and submit button text
-                            debugger;
                             document.getElementById('addCardModalLabel').innerText = 'Edit Card';
                             addCardForm.querySelector('.btn-primary').innerText = 'Save Changes';
 
@@ -656,40 +655,6 @@
                         });
                 });
 
-                newDeleteBtn.addEventListener('click', function(event) {
-                    event.stopPropagation(); // Prevent triggering the flashcard flip
-
-                    const pairId = this.getAttribute('data-id');
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                    if (confirm('このフラッシュカードを削除してもよろしいですか？')) {
-                        fetch(`/api/flashcards/pairs/${pairId}/delete`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.json().then(errorData => {
-                                    const errorMessage = errorData.errors ? errorData.errors.join(', ') : 'エラーが発生しました。';
-                                    throw new Error(errorMessage);
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            alert(data.message || 'フラッシュカードが削除されました。');
-                            // Remove the flashcard from the DOM
-                            this.closest('.flashcard-container').remove();
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert(`フラッシュカードの削除に失敗しました。: ${error.message}`);
-                        });
-                    }
-                });
             }
         });
     </script>

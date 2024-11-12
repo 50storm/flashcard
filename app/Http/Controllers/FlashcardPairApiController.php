@@ -74,12 +74,12 @@ class FlashcardPairApiController extends Controller
                 'front_content' => [
                     'id' => $frontContent->id,
                     'content' => $frontContent->content,
-                    'language_id' => $frontContent->language_id,
+                    'language_code' => $flashcardPair->frontContent->language->language_code,
                 ],
                 'back_content' => [
                     'id' => $backContent->id,
                     'content' => $backContent->content,
-                    'language_id' => $backContent->language_id,
+                    'language_code' => $flashcardPair->frontContent->language->language_code,
                 ],
             ],
         ], 201);
