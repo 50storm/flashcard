@@ -1,8 +1,13 @@
 @extends('layouts.app')
+
 <!-- Custom CSS Section -->
 @section('styles')
     <style>
-
+        .flashcard {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
     </style>
 @endsection
 
@@ -10,10 +15,10 @@
     <div class="container">
         <!-- ハンバーガーメニューのトリガー部分 -->
         <div class="d-flex">
-            <!-- TODO mt-2は、デスクトップのときのみ -->
+            <!-- mt-2はデスクトップのときのみ -->
             <div class="mt-lg-2">
                 <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#menuContent" aria-expanded="false" aria-controls="menuContent">
-                <span>&#9776;</span>
+                    <span>&#9776;</span>
                 </button>
             </div>
             <div class="">
@@ -50,31 +55,55 @@
             </div>
         </div>
 
-        <!-- フラッシュカードを表示するための領域 -->
+        <!-- フラッシュカードを表示する領域 -->
         <div id="flashcard-list" class="list-group">
-        @foreach ($flashcards as $flashcard)
-            <div class="list-group-item flashcard">
-                <div class="d-flex justify-content-between align-items-center">
-                    <!-- テキスト部分 -->
-                    <span class="flashcard-text" style="flex-grow: 1;" data-japanese="{{ $flashcard->japanese }}" data-english="{{ $flashcard->english }}">
-                        {{ $flashcard->japanese }}
-                    </span>
-                    <!-- ボタンを縦並びにするためにflex-columnを追加 -->
-                    <div class="d-flex flex-column" style="white-space: nowrap;">
-                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn">
-                            <span class="material-icons">edit</span>                        
-                        </a>
-                        <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn" onclick="return confirm('このフラッシュカードを削除しますか？')">
-                                <span class="material-icons">delete</span>
-                            </button>
-                        </form>
-                    </div>
+            @if ($flashcards->isEmpty())
+                <p>No flashcards available.</p>
+            @else
+                <div class="row">
+                    @foreach ($flashcards as $flashcard)
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <!-- このフラッシュカードを練習するボタンを追加 -->
+                                    <a href="{{ route('flashcards.practice', $flashcard->id) }}" class="btn btn-primary mb-2">このフラッシュカードを練習する</a>
+                                    @empty($flashcard->name)
+                                         <h5 class="card-title">No name</h5>
+                                    @else
+                                        <h5 class="card-title">{{ $flashcard->name }}</h5>
+                                    @endempty
+                                    <!-- <p class="card-text"><strong>User ID:</strong> {{ $flashcard->user_id }}</p> -->
+
+                                    <h6 class="text-decoration-underline">cards</h6>
+                                    <ul>
+                                        @foreach ($flashcard->pairs as $pair)
+                                            <li>
+                                                <strong>Front:</strong> {{ $pair->frontContent->content ?? 'N/A' }}<br>
+                                                <strong>Back:</strong> {{ $pair->backContent->content ?? 'N/A' }}
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    <p><strong>Created At:</strong> {{ $flashcard->created_at }}</p>
+                                    <p><strong>Updated At:</strong> {{ $flashcard->updated_at }}</p>
+
+                                    <div class="d-flex flex-column" style="white-space: nowrap;">
+                                        <a href="{{ route('flashcards.edit', $flashcard->id) }}" class="btn">
+                                            <span class="material-icons">edit</span>                        
+                                        </a>
+                                        <form action="{{ route('flashcards.destroy', $flashcard->id) }}" method="POST" class="d-inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn" onclick="return confirm('このフラッシュカードを削除しますか？')">
+                                                <span class="material-icons">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-            </div>
-        @endforeach
+            @endif
         </div>
 
     </div>
@@ -84,7 +113,7 @@
             let isVoiceEnabled = true; // 音声のON/OFF状態
             let selectedRate = 1.0; // 音声速度の初期値
 
-             // イベントリスナーをテキストエリアに追加
+            // イベントリスナーをテキストエリアに追加
             document.getElementById('japaneseTextarea').addEventListener('input', checkTextareaInput);
             document.getElementById('englishTextarea').addEventListener('input', checkTextareaInput);
 
@@ -144,23 +173,7 @@
                 alert('このブラウザは音声合成APIをサポートしていません。');
             }
         }
-        
-        // ウィンドウサイズに応じてtextareaの行数を変更する関数
-        function resizeTextarea() {
-            var japaneseTextarea = document.getElementById('japaneseTextarea');
-            var englishTextarea = document.getElementById('englishTextarea');
 
-            // デスクトップサイズ（幅992px以上）の場合の行数
-            if (window.innerWidth >= 992) {
-                japaneseTextarea.rows = 13; // デスクトップでは5行
-                englishTextarea.rows = 13;
-            } else {
-                // モバイルサイズ（幅992px未満）の場合の行数
-                japaneseTextarea.rows = 10; // モバイルでは3行
-                englishTextarea.rows = 10;
-            }
-        }
-        
         // テキストエリアの入力がある場合にボタンにクラスを追加する関数
         function checkTextareaInput() {
             var japaneseTextarea = document.getElementById('japaneseTextarea').value.trim();
@@ -176,9 +189,5 @@
                 submitButton.disabled = true;  // ボタンを無効化
             }
         }
-
-        // ページが読み込まれたとき、またはウィンドウがリサイズされたときに行数を調整
-        window.addEventListener('resize', resizeTextarea);
-        window.addEventListener('load', resizeTextarea);
     </script>
 @endsection
