@@ -44,4 +44,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Flashcardとのリレーション
+    public function flashcards()
+    {
+        return $this->hasMany(Flashcard::class);
+    }
 }

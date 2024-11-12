@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Flashcard;
 use App\Models\Language;
 use App\Exports\FlashCardsExport;
@@ -12,12 +13,19 @@ use Illuminate\Http\Request;
 
 class FlashcardController extends Controller
 {
-    // フラッシュカードを表示する
-    public function index()
-    {
-        // contentをEager Loadingで取得
-        $flashcards = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])->get();
-        return view('flashcards.index', compact('flashcards'));
+    // フラッシュカードの一覧を表示する
+    public function index(User $user = null)
+    { 
+        // contentをEager Loadingで取得し、ユーザーに関連するフラッシュカードを取得
+        if ($user) {
+            // 特定のユーザーのフラッシュカードを取得
+            $flashcards = $user->flashcards()->with(['pairs.frontContent', 'pairs.backContent'])->get();
+        } else {
+            // 全てのフラッシュカードを取得
+            $flashcards = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])->get();
+        }
+    
+        return view('flashcards.index', compact('flashcards', 'user'));
     }
 
      /**
@@ -26,6 +34,15 @@ class FlashcardController extends Controller
     public function practice($id)
     {
         // 中間テーブルも取得する
+                // id が１の
+        // user情報を取得する
+        // usersテーブルにある
+        // IDが1のユーザー情報を取得
+        // usersテーブルから取得するが、ここでは明示的にEager Loadingは不要
+        $user = User::find(1);
+
+        dd($user);
+
         // Note: Joinよりもeager loadingが早いらしい。
         $flashcard = Flashcard::with(['pairs.frontContent', 'pairs.backContent'])
                           ->where('user_id', 1) // 条件として特定のユーザーID
