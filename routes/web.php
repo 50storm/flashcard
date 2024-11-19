@@ -2,12 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FlashcardController;
+use App\Http\Controllers\NoticeController;
+
 
 Route::get('/', function() {
     return view('welcome');
 });
 
 
+Route::get('/notices', [NoticeController::class, 'index']);
 
 // Laravel Excel 
 use App\Exports\UsersCsvExport;

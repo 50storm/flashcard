@@ -16,4 +16,10 @@ class Notice extends Model
         'end_date',
         'is_active',
     ];
+
+    // 日付フィールドを自動的に Carbon インスタンスにキャスト
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+   ];
 }
