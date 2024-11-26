@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notice;
 use Illuminate\Http\Request;
 
-class NoticeController extends Controller
+class DashboardController extends Controller
 {
     public function index()
     {
@@ -17,10 +17,6 @@ class NoticeController extends Controller
                          })
                          ->orderBy('start_date', 'desc')
                          ->get();
-
-        // dump("index");
-        // dd($notices);
-
-        return view('notices.index', compact('notices'));
-    }
+        return view('dashboard', compact('notices'));
+    }    
 }
